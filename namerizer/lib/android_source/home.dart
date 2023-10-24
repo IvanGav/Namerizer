@@ -15,33 +15,47 @@ class Home extends StatefulWidget {
 //_______________________________HomeState____________________________________
 
 class _HomeState extends State<Home> {
+
+  @override
+  void initState() {
+    super.initState();
+    _initClasses();
+  }
+
   //_____________fields_______________
   int _counter = 0;
-  late var _classes; //contains all classes for this professor
+  bool _classesInitialized = false;
+  late List<String> _classes; //contains all classes for this professor
+
+  //
+  void _initClasses() async {
+    _classes = ["Class1", "Class2"];
+    _classesInitialized = true;
+  }
 
   //_____________add/remove a class_______________
-  void _addClass() {
+  void _addClass() async {
     setState(() {
-      _counter++;
+      _classes.add("NewClass");
     });
   }
 
   void _removeClass() {
     setState(() {
-      _counter--;
+      _classes.removeLast();
     });
   }
 
   //_____________class list widget getter_______________
   Widget _getClassList(BuildContext context) {
-    if(_classes != null) {
-
+    if(!_classesInitialized) {
+      return const Text("Please Wait...");
     }
     List<Widget> classList = [];
-    for(const c in _classes) {
+    for(var c in _classes) {
       classList.add(_getClassTile(c, context));
     }
-    return ListView(
+    return Column(//ListView
       children: classList,
     );
   }
@@ -74,10 +88,7 @@ class _HomeState extends State<Home> {
             const Text(
               "Classes: ",
             ),
-            Text(
-              "$_counter",
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            _getClassList(context),
           ],
         ),
       ),
