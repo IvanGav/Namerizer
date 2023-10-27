@@ -15,25 +15,24 @@ class Home extends StatefulWidget {
 //_______________________________HomeState____________________________________
 
 class _HomeState extends State<Home> {
+  //_____________fields_______________
+  bool _classesInitialized = false;
+  late List<String> _classes; //contains all classes for this professor
 
+  //_____________init_______________
   @override
   void initState() {
     super.initState();
     _initClasses();
   }
 
-  //_____________fields_______________
-  int _counter = 0;
-  bool _classesInitialized = false;
-  late List<String> _classes; //contains all classes for this professor
-
-  //
+  //_____________init classes_____________
   void _initClasses() async {
     _classes = ["Class1", "Class2"];
     _classesInitialized = true;
   }
 
-  //_____________add/remove a class_______________
+  //_____________add/remove a class_____________
   void _addClass() async {
     setState(() {
       _classes.add("NewClass");
