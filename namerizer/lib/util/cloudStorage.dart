@@ -25,6 +25,9 @@ class CloudStorage {
   //    update the whole student's profile - if talking about a student
   //    Or "createClass" function could be purely for creating a new class,
   //    or "removeClass", you get the idea
+  //Also, making methods that mimic the signature of real methods can be used with just constant
+  //    predefined output, to simulate you getting stuff from firebase, without it being set up
+  //Make sure to communicate any changes to this class so we both have updated version
   Future<int> getInt(String name) async {
     while(!_init) {
       await initializeDefault();
