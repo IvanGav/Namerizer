@@ -29,13 +29,14 @@ class _StudentViewState extends State<StudentView> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        title: Text(widget.student.preferredName == null ? (widget.student.firstName + widget.student.lastName) : widget.student.preferredName!),
-        subtitle: _expanded ? const Text("I have EXPANDED") : null,
-        onTap: () => {
-          setState(() {
-            _expanded = !_expanded;
-          })
-        }
+      leading: CircleAvatar(backgroundImage: widget.student.photo.image),
+      title: Text(widget.student.preferredName == null ? ("${widget.student.firstName} ${widget.student.lastName}") : widget.student.preferredName!),
+      subtitle: _expanded ? Text("${widget.student.firstName} ${widget.student.lastName}") : null,
+      onTap: () => {
+        setState(() {
+          _expanded = !_expanded;
+        })
+      }
     );
   }
 }
