@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "../util/cloudStorage.dart";
 import "classPage.dart";
 
 //_____________________________Home____________________________________
@@ -18,6 +19,7 @@ class _HomeState extends State<Home> {
   //_____________fields_______________
   bool _classesInitialized = false;
   late List<String> _classes; //contains all classes for this professor
+  final cloud = CloudStorage("prof");
 
   //_____________init_______________
   @override
@@ -28,20 +30,102 @@ class _HomeState extends State<Home> {
 
   //_____________init classes_____________
   void _initClasses() async {
-    _classes = ["Class1", "Class2"];
-    _classesInitialized = true;
-  }
-
-  //_____________add/remove a class_____________
-  void _addClass() async {
+    _classes = await cloud.getClasses();
     setState(() {
-      _classes.add("NewClass");
+      _classesInitialized = true;
     });
   }
 
-  void _removeClass() {
+  //_____________add/remove a class_____________
+  void _promptAddClass(BuildContext context) {
+    final TextEditingController formControl = TextEditingController();
+    var form = TextFormField(
+      controller: formControl,
+      validator: (_) => null, //always accept
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: "Class Name",
+      ),
+    );
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Enter a Class Name:"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text("A class with this name will be created."),
+              const SizedBox(height: 20),
+              form,
+            ],
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Cancel")
+            ),
+            TextButton(
+              onPressed: () {
+                _addClass(formControl.text);
+                Navigator.of(context).pop();
+              },
+              child: const Text("Create")
+            ),
+          ],
+        )
+    );
+  }
+
+  void _promptRemoveClass(BuildContext context) {
+    final TextEditingController formControl = TextEditingController();
+    var form = TextFormField(
+      controller: formControl,
+      validator: (_) => null, //always accept
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: "Class Name",
+      ),
+    );
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Enter a Class Name:"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text("A class with this name will be permanently deleted.", style: TextStyle(color: Colors.red)),
+              const SizedBox(height: 20),
+              form,
+            ],
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Cancel")
+            ),
+            TextButton(
+                onPressed: () {
+                  _removeClass(formControl.text);
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Delete", style: TextStyle(color: Colors.red))
+            ),
+          ],
+        )
+    );
+  }
+
+  Future<void> _addClass(String className) async {
+    await cloud.addClass(className);
     setState(() {
-      _classes.removeLast();
+      _classes.add(className);
+    });
+  }
+
+  void _removeClass(String className) async {
+    await cloud.removeClass(className);
+    setState(() {
+      _classes.removeWhere((element) => element == className);
     });
   }
 
@@ -79,32 +163,21 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              "Classes: ",
-            ),
-            _getClassList(context),
-          ],
-        ),
-      ),
-      persistentFooterButtons: [
-        FloatingActionButton(
+        leading: IconButton(
           onPressed: () => {print("Logout is not yet implemented")},
           tooltip: "Logout",
-          child: const Icon(Icons.logout),
+          icon: const Icon(Icons.logout),
         ),
-        const SizedBox(width: 20),
+      ),
+      body: _getClassList(context),
+      persistentFooterButtons: [
         FloatingActionButton(
-          onPressed: _addClass,
+          onPressed: () => _promptAddClass(context),
           tooltip: "Add a class",
           child: const Icon(Icons.add),
         ),
         FloatingActionButton(
-          onPressed: _removeClass,
+          onPressed: () => _promptRemoveClass(context),
           tooltip: "Remove a class",
           child: const Icon(Icons.remove),
         ),

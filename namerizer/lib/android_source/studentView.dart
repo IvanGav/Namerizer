@@ -28,10 +28,16 @@ class _StudentViewState extends State<StudentView> {
   //_____________build_______________
   @override
   Widget build(BuildContext context) {
+    //image is too small
     return ListTile(
-      leading: CircleAvatar(backgroundImage: widget.student.photo.image),
+      leading: CircleAvatar( //too small
+        backgroundImage: widget.student.photo.image,
+        radius: _expanded ? 30 : 20,
+      ),
+      trailing: null, //here goes pronunciation when expanded, if we get to it
       title: Text(widget.student.preferredName == null ? ("${widget.student.firstName} ${widget.student.lastName}") : widget.student.preferredName!),
-      subtitle: _expanded ? Text("${widget.student.firstName} ${widget.student.lastName}") : null,
+      subtitle: _expanded ? Text("${widget.student.firstName} ${widget.student.lastName}, ${widget.student.gender.name}") : null,
+      isThreeLine: _expanded ? true : false,
       onTap: () => {
         setState(() {
           _expanded = !_expanded;

@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:namerizer/android_source/studentView.dart";
 
 import "../util/student.dart";
-import "android.dart";
 import "../util/cloudStorage.dart";
 
 //_____________________________Home____________________________________
@@ -22,7 +21,7 @@ class _ClassHomeState extends State<ClassHome> {
   //_____________fields_______________
   bool _studentsInitialized = false;
   late List<Student> _students;
-  final cloud = CloudStorage();
+  final cloud = CloudStorage("prof");
 
   //_____________init_______________
   @override
@@ -41,7 +40,7 @@ class _ClassHomeState extends State<ClassHome> {
   //_____________class list widget getter_______________
   Widget _getStudentList() {
     if(!_studentsInitialized) {
-      return const Text("Please Wait...");
+      return const CircularProgressIndicator();
     }
     List<Widget> studentList = [];
     for(var s in _students) {
@@ -65,17 +64,17 @@ class _ClassHomeState extends State<ClassHome> {
       ),
       persistentFooterButtons: [
         FloatingActionButton(
-          onPressed: () => {print("Logout is not yet implemented")},
+          onPressed: () => {print("The game is not yet implemented")},
           tooltip: "Flash Cards",
           child: const Text("Flash"),
         ),
         FloatingActionButton(
-          onPressed: () => {print("Logout is not yet implemented")},
+          onPressed: () => {print("The game is not yet implemented")},
           tooltip: "Match Name",
           child: const Text("Match Name"),
         ),
         FloatingActionButton(
-          onPressed: () => {print("Logout is not yet implemented")},
+          onPressed: () => {print("The game is not yet implemented")},
           tooltip: "Match Photo",
           child: const Text("Match Photo"),
         ),
