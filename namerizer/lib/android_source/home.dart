@@ -19,7 +19,9 @@ class _HomeState extends State<Home> {
   //_____________fields_______________
   bool _classesInitialized = false;
   late List<String> _classes; //contains all classes for this professor
-  final cloud = CloudStorage("prof");
+  late Map<String,String> _classNames; //maps class code -> class name
+  final _cloud = CloudStorage("prof");
+  bool _loading = false; //can be set to true to show that a process is executing (such as async functions). Don't forget to set to false when done.
 
   //_____________init_______________
   @override
@@ -30,8 +32,13 @@ class _HomeState extends State<Home> {
 
   //_____________init classes_____________
   void _initClasses() async {
-    _classes = await cloud.getClasses();
     setState(() {
+      _loading = true;
+    });
+    _classes = await _cloud.getClasses();
+    _classNames = await _cloud.getClassNames();
+    setState(() {
+      _loading = false;
       _classesInitialized = true;
     });
   }
@@ -116,16 +123,48 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _addClass(String className) async {
-    await cloud.addClass(className);
     setState(() {
-      _classes.add(className);
+      _loading = true;
+    });
+    String classCode = await _cloud.addClass(className);
+    setState(() {
+      _loading = false;
+      _classes.add(classCode);
+      _classNames[classCode] = className;
     });
   }
 
-  void _removeClass(String className) async {
-    await cloud.removeClass(className);
+  Future<void> _removeClass(String className) async {
     setState(() {
-      _classes.removeWhere((element) => element == className);
+      _loading = true;
+    });
+    String classCode = "";
+    for(var e in _classNames.entries) {
+      if(e.value == className) {
+        classCode = e.key;
+      }
+    }
+    if(classCode == "") {
+      setState(() {
+        _loading = false;
+      });
+      //no such class (name) exists
+      return;
+    }
+    bool result = false;
+    result = await _cloud.removeClass(classCode);
+    if(result == false) {
+      setState(() {
+        _loading = false;
+      });
+      //no remove wasn't successful
+      return;
+    }
+    //remove all classes with that name (CHANGE LATER MAYBE)
+    setState(() {
+      _loading = false;
+      _classes.removeWhere((element) => element == classCode);
+      _classNames.remove(classCode);
     });
   }
 
@@ -143,13 +182,13 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _getClassTile(String className, BuildContext context) {
+  Widget _getClassTile(String classCode, BuildContext context) {
     return ListTile(
-      title: Text(className),
+      title: Text(_classNames[classCode] == null ? "ERROR: Class Doesn't Exist" : _classNames[classCode]!),
       onTap: () => {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => ClassHome(title: className),
+            builder: (context) => ClassHome(code: classCode, cloud: _cloud),
           ),
         )
       }
@@ -183,6 +222,7 @@ class _HomeState extends State<Home> {
         ),
       ],
       persistentFooterAlignment: AlignmentDirectional.center,
+      floatingActionButton: _loading ? const CircularProgressIndicator() : null,
     );
   }
 }

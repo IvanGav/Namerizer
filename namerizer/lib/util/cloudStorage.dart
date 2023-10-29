@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:math";
 
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_core/firebase_core.dart";
@@ -72,18 +73,44 @@ class CloudStorage {
   }
 
   //_____________class_______________
-  //get a list of all classes for this professor
+  //get a list of all class codes for this professor
   Future<List<String>> getClasses() async {
-    return [
-      "CINS 467 TTh",
-      "CSCI 411 MTWTh",
-      "UWUS 069 SuSa"
+    return [ //will be changed shortly
+      "1",
+      "2",
+      "3",
     ];
+  }
+
+  //get a class name from a class code
+  Future<String> getClassName(String classCode) async {
+    String name;
+    switch(classCode) {
+      case "1":
+        name = "CINS 467 TTh";
+      case "2":
+        name = "CSCI 411 MTWTh";
+      case "3":
+        name = "Hello World";
+      default:
+        name = "New Class Name";
+    };
+    return name;
+  }
+
+  //get a map of class code to class name
+  Future<Map<String,String>> getClassNames() async {
+    return {
+      "1": "CINS 467 TTh",
+      "2": "CSCI 411 MTWTh",
+      "3": "Hello World",
+      "new_class_code": "New Class Name"
+    };
   }
 
   //create a class with a specified name and return a class code of that class
   Future<String> addClass(String className) async {
-    return "new_class_code";
+    return "${Random().nextDouble()}";
   }
 
   //remove a class by class code

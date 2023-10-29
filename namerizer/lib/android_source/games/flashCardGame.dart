@@ -1,15 +1,15 @@
 import "package:flutter/material.dart";
 import "package:namerizer/android_source/studentView.dart";
 
-import "../util/student.dart";
-import "../util/cloudStorage.dart";
+import "../../util/cloudStorage.dart";
+import "../../util/student.dart";
 
 //_____________________________Home____________________________________
 
 class ClassHome extends StatefulWidget {
-  const ClassHome({super.key, required this.code, required this.cloud});
+  const ClassHome({super.key, required this.title, required this.cloud});
 
-  final String code; //class code
+  final String title; //class name
   final CloudStorage cloud;
 
   @override
@@ -22,26 +22,19 @@ class _ClassHomeState extends State<ClassHome> {
   //_____________fields_______________
   bool _studentsInitialized = false;
   late List<Student> _students;
-  String _title = "loading...";
 
   //_____________init_______________
   @override
   void initState() {
     super.initState();
     _initStudents();
-    _initTitle();
   }
 
   void _initStudents() async {
-    _students = await widget.cloud.getStudents(widget.code);
+    _students = await widget.cloud.getStudents(widget.title);
     setState(() {
       _studentsInitialized = true;
     });
-  }
-
-  void _initTitle() async {
-    String title = await widget.cloud.getClassName(widget.code);
-    setState(() { _title = title; });
   }
 
   //_____________class list widget getter_______________
@@ -64,10 +57,10 @@ class _ClassHomeState extends State<ClassHome> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(_title),
+        title: Text(widget.title),
       ),
       body: Center(
-          child: _getStudentList(),
+        child: _getStudentList(),
       ),
       persistentFooterButtons: [
         FloatingActionButton(
