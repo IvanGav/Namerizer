@@ -30,14 +30,21 @@ class _StudentViewState extends State<StudentView> {
   Widget build(BuildContext context) {
     //image is too small
     return ListTile(
-      leading: CircleAvatar( //too small
+      leading: CircleAvatar( //too small?
         backgroundImage: widget.student.photo.image,
         radius: _expanded ? 30 : 20,
       ),
       trailing: null, //here goes pronunciation when expanded, if we get to it
-      title: Text(widget.student.preferredName == null ? ("${widget.student.firstName} ${widget.student.lastName}") : widget.student.preferredName!),
-      subtitle: _expanded ? Text("${widget.student.firstName} ${widget.student.lastName}, ${widget.student.gender.name}") : null,
-      isThreeLine: _expanded ? true : false,
+      title: Text(
+        widget.student.name,
+        maxLines: 1,
+      ),
+      subtitle: _expanded ? Text(
+        "${widget.student.fullName}, ${widget.student.gender.name}",
+        maxLines: 1,
+      ) : null,
+      dense: true,
+      visualDensity: _expanded ? const VisualDensity(vertical: VisualDensity.maximumDensity) : const VisualDensity(vertical: 0),
       onTap: () => {
         setState(() {
           _expanded = !_expanded;

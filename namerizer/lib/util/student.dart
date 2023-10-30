@@ -8,6 +8,17 @@ class Student {
   String? preferredName;
   Image photo;
   Gender gender;
+
+  String get name {
+    if(preferredName != null) {
+      return preferredName!;
+    }
+    return fullName;
+  }
+
+  String get fullName {
+    return "$firstName $lastName";
+  }
 }
 
 enum Gender {

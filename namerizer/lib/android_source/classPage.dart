@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:namerizer/android_source/games/flashCardGame.dart";
 import "package:namerizer/android_source/studentView.dart";
 
 import "../util/student.dart";
@@ -58,6 +59,15 @@ class _ClassHomeState extends State<ClassHome> {
     );
   }
 
+  //_____________play games_______________
+  void _playFlash(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => FlashCardGame(title: _title, students: _students),
+      ),
+    );
+  }
+
   //_____________build_______________
   @override
   Widget build(BuildContext context) {
@@ -71,17 +81,20 @@ class _ClassHomeState extends State<ClassHome> {
       ),
       persistentFooterButtons: [
         FloatingActionButton(
-          onPressed: () => {print("The game is not yet implemented")},
+          heroTag: "flash_game",
+          onPressed: () => _playFlash(context),
           tooltip: "Flash Cards",
           child: const Text("Flash"),
         ),
         FloatingActionButton(
-          onPressed: () => {print("The game is not yet implemented")},
+          heroTag: "match_name_game",
+          onPressed: () { print("The game is not yet implemented"); },
           tooltip: "Match Name",
           child: const Text("Match Name"),
         ),
         FloatingActionButton(
-          onPressed: () => {print("The game is not yet implemented")},
+          heroTag: "match_photo_game",
+          onPressed: () { print("The game is not yet implemented"); },
           tooltip: "Match Photo",
           child: const Text("Match Photo"),
         ),
