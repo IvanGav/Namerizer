@@ -1,53 +1,73 @@
-import "package:flutter/material.dart";
-import "package:namerizer/android_source/studentView.dart";
+import "dart:math";
 
-import "../../util/cloudStorage.dart";
+import "package:flutter/material.dart";
+
 import "../../util/student.dart";
+import "flashCard.dart";
 
 //_____________________________Home____________________________________
 
-class ClassHome extends StatefulWidget {
-  const ClassHome({super.key, required this.title, required this.cloud});
+class FlashCardGame extends StatefulWidget {
+  const FlashCardGame({super.key, required this.title, required this.students});
 
-  final String title; //class name
-  final CloudStorage cloud;
+  final String title; //class name, class code is not required here
+  final List<Student> students;
 
   @override
-  State<ClassHome> createState() => _ClassHomeState();
+  State<FlashCardGame> createState() => _FlashCardGameState();
 }
 
 //_______________________________HomeState____________________________________
 
-class _ClassHomeState extends State<ClassHome> {
+class _FlashCardGameState extends State<FlashCardGame> {
   //_____________fields_______________
-  bool _studentsInitialized = false;
-  late List<Student> _students;
+  final List<Student> _randomOrder = [];
+  late FlashCard _card;
 
   //_____________init_______________
   @override
   void initState() {
     super.initState();
-    _initStudents();
+    _nextCard();
   }
 
-  void _initStudents() async {
-    _students = await widget.cloud.getStudents(widget.title);
+  //_____________get next card_______________
+  void _nextCard() {
     setState(() {
-      _studentsInitialized = true;
+      _card = FlashCard(student: _nextStudent(), key: ValueKey<int>(_randomOrder.length));
     });
   }
 
-  //_____________class list widget getter_______________
-  Widget _getStudentList() {
-    if(!_studentsInitialized) {
-      return const CircularProgressIndicator();
+  Student _nextStudent() {
+    if(_randomOrder.isEmpty) {
+      _rebuildRandomOrder();
     }
-    List<Widget> studentList = [];
-    for(var s in _students) {
-      studentList.add(StudentView(student: s));
+    Student s = _randomOrder.last;
+    _randomOrder.removeLast();
+    return s;
+  }
+
+  //populate randomOrder with elements from widget.students, in random order
+  void _rebuildRandomOrder() {
+    List<int> order = List.generate(widget.students.length,(i) => i);
+    List<int> rand = [];
+    while(order.isNotEmpty) {
+      int i = Random().nextInt(order.length); //possible freeze location?
+      rand.add(order[i]);
+      order.removeAt(i);
     }
-    return Column(//ListView
-      children: studentList,
+    for(int i in rand) {
+      _randomOrder.add(widget.students[i]);
+    }
+  }
+
+  //_____________animate card_______________
+  Widget _animateCard() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 600),
+      switchInCurve: Curves.ease,
+      switchOutCurve: Curves.ease,
+      child: _card,
     );
   }
 
@@ -60,23 +80,13 @@ class _ClassHomeState extends State<ClassHome> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: _getStudentList(),
+        child: _animateCard(),
       ),
       persistentFooterButtons: [
         FloatingActionButton(
-          onPressed: () => {print("The game is not yet implemented")},
-          tooltip: "Flash Cards",
-          child: const Text("Flash"),
-        ),
-        FloatingActionButton(
-          onPressed: () => {print("The game is not yet implemented")},
-          tooltip: "Match Name",
-          child: const Text("Match Name"),
-        ),
-        FloatingActionButton(
-          onPressed: () => {print("The game is not yet implemented")},
-          tooltip: "Match Photo",
-          child: const Text("Match Photo"),
+          onPressed: () => _nextCard(),
+          tooltip: "Next Card",
+          child: const Icon(Icons.arrow_forward),
         ),
       ],
       persistentFooterAlignment: AlignmentDirectional.center,

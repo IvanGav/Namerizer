@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "../util/cloudStorage.dart";
 import "classPage.dart";
 
@@ -203,19 +204,28 @@ class _HomeState extends State<Home> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         leading: IconButton(
-          onPressed: () => {print("Logout is not yet implemented")},
-          tooltip: "Logout",
-          icon: const Icon(Icons.logout),
+          onPressed: () => SystemChannels.platform.invokeMethod("SystemNavigator.pop"),
+          tooltip: "Quit to Home",
+          icon: const Icon(Icons.home),
         ),
+        actions: [ //tailing
+          IconButton(
+            onPressed: () { print("Logout is not yet implemented"); },
+            tooltip: "Logout",
+            icon: const Icon(Icons.logout),
+          ),
+        ],
       ),
       body: _getClassList(context),
       persistentFooterButtons: [
         FloatingActionButton(
+          heroTag: "add_class", //idk what it is, but it throws exceptions without this tag thing
           onPressed: () => _promptAddClass(context),
           tooltip: "Add a class",
           child: const Icon(Icons.add),
         ),
         FloatingActionButton(
+          heroTag: "remove_class",
           onPressed: () => _promptRemoveClass(context),
           tooltip: "Remove a class",
           child: const Icon(Icons.remove),
