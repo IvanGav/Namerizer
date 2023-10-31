@@ -60,11 +60,110 @@ class CloudStorage {
   //_____________student_______________
   //get a list of all students for this professor
   Future<List<Student>> getStudents(String classCode) async {
-    return [
-      Student(firstName: "John", lastName: "Smith", preferredName: "Ainz Ooal Gown", gender: Gender.nonbinary, photo: Image.network("https://static.wikia.nocookie.net/the-muse-list/images/4/46/Ainz.jpg/revision/latest?cb=20200607025936")),
-      Student(firstName: "Hitori", lastName: "Gotoh", preferredName: "Bocchi", gender: Gender.female, photo: Image.network("https://ih0.redbubble.net/image.4908319264.0145/raf,360x360,075,t,fafafa:ca443f4786.jpg")),
-      Student(firstName: "Cid", lastName: "Kageno", gender: Gender.male, photo: Image.network("https://i.pinimg.com/originals/48/78/9e/48789e1ee588a2d305c2a12a0ac6a443.jpg")),
-    ];
+    if(classCode == "1") {
+      return [
+        Student(firstName: "John",
+            lastName: "Smith",
+            preferredName: "Ainz Ooal Gown",
+            gender: Gender.nonbinary,
+            photo: Image.network(
+                "https://static.wikia.nocookie.net/the-muse-list/images/4/46/Ainz.jpg/revision/latest?cb=20200607025936")),
+        Student(firstName: "Hitori",
+            lastName: "Gotoh",
+            preferredName: "Bocchi",
+            gender: Gender.female,
+            photo: Image.network(
+                "https://ih0.redbubble.net/image.4908319264.0145/raf,360x360,075,t,fafafa:ca443f4786.jpg")),
+        Student(firstName: "Cid",
+            lastName: "Kageno",
+            gender: Gender.male,
+            photo: Image.network(
+                "https://i.pinimg.com/originals/48/78/9e/48789e1ee588a2d305c2a12a0ac6a443.jpg")),
+        Student(firstName: "Scrach",
+            lastName: "Cat",
+            gender: Gender.nonbinary,
+            photo: Image.network(
+                "https://static.wikia.nocookie.net/battlefordreamislandfanfiction/images/f/f2/Costume1_%281%29-1.png/revision/latest?cb=20190921173942")),
+        Student(firstName: "Geometry",
+            lastName: "Dash",
+            preferredName: "Cool Cube",
+            gender: Gender.nonbinary,
+            photo: Image.network(
+                "https://static.wikia.nocookie.net/geometry-dash/images/6/66/Cube012.png/revision/latest?cb=20150220064317")),
+        Student(firstName: "Factorio",
+            lastName: "Dude",
+            preferredName: "I AM ENGINEER!",
+            gender: Gender.male,
+            photo: Image.network(
+                "https://static.wikia.nocookie.net/p__/images/f/fa/Factorio_engineer_standing.png/revision/latest?cb=20210831004413&path-prefix=protagonist")),
+        Student(firstName: "Hakos",
+            lastName: "Baelz",
+            preferredName: "Bae",
+            gender: Gender.female,
+            photo: Image.network(
+                "https://static.miraheze.org/hololivewiki/thumb/a/a6/Hakos_Baelz_-_Portrait_VR_01.png/153px-Hakos_Baelz_-_Portrait_VR_01.png")),
+      ];
+    } else if(classCode == "2") {
+      return [
+        Student(firstName: "John",
+            lastName: "Smith",
+            preferredName: "Ainz Ooal Gown",
+            gender: Gender.nonbinary,
+            photo: Image.network(
+                "https://static.wikia.nocookie.net/the-muse-list/images/4/46/Ainz.jpg/revision/latest?cb=20200607025936")),
+        Student(firstName: "Hitori",
+            lastName: "Gotoh",
+            preferredName: "Bocchi",
+            gender: Gender.female,
+            photo: Image.network(
+                "https://ih0.redbubble.net/image.4908319264.0145/raf,360x360,075,t,fafafa:ca443f4786.jpg")),
+        Student(firstName: "Cid",
+            lastName: "Kageno",
+            gender: Gender.male,
+            photo: Image.network(
+                "https://i.pinimg.com/originals/48/78/9e/48789e1ee588a2d305c2a12a0ac6a443.jpg")),
+        Student(firstName: "Hakos",
+            lastName: "Baelz",
+            preferredName: "Bae",
+            gender: Gender.female,
+            photo: Image.network(
+                "https://static.miraheze.org/hololivewiki/thumb/a/a6/Hakos_Baelz_-_Portrait_VR_01.png/153px-Hakos_Baelz_-_Portrait_VR_01.png")),
+      ];
+    } else if(classCode == "3") {
+      return [
+        Student(firstName: "Scrach",
+            lastName: "Cat",
+            gender: Gender.nonbinary,
+            photo: Image.network(
+                "https://static.wikia.nocookie.net/battlefordreamislandfanfiction/images/f/f2/Costume1_%281%29-1.png/revision/latest?cb=20190921173942")),
+        Student(firstName: "Geometry",
+            lastName: "Dash",
+            preferredName: "Cool Cube",
+            gender: Gender.nonbinary,
+            photo: Image.network(
+                "https://static.wikia.nocookie.net/geometry-dash/images/6/66/Cube012.png/revision/latest?cb=20150220064317")),
+        Student(firstName: "Factorio",
+            lastName: "Dude",
+            preferredName: "I AM ENGINEER!",
+            gender: Gender.male,
+            photo: Image.network(
+                "https://static.wikia.nocookie.net/p__/images/f/fa/Factorio_engineer_standing.png/revision/latest?cb=20210831004413&path-prefix=protagonist")),
+        ];
+    } else {
+      return [
+        Student(firstName: "Hitori",
+            lastName: "Gotoh",
+            preferredName: "Bocchi",
+            gender: Gender.female,
+            photo: Image.network(
+                "https://ih0.redbubble.net/image.4908319264.0145/raf,360x360,075,t,fafafa:ca443f4786.jpg")),
+        Student(firstName: "Cid",
+            lastName: "Kageno",
+            gender: Gender.male,
+            photo: Image.network(
+                "https://i.pinimg.com/originals/48/78/9e/48789e1ee588a2d305c2a12a0ac6a443.jpg")),
+      ];
+    }
   }
 
   //add a student to a class with a specified class code
