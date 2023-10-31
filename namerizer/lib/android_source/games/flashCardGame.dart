@@ -23,6 +23,7 @@ class _FlashCardGameState extends State<FlashCardGame> {
   //_____________fields_______________
   final List<Student> _randomOrder = [];
   late FlashCard _card;
+  bool _animationActive = false;
 
   //_____________init_______________
   @override
@@ -33,9 +34,14 @@ class _FlashCardGameState extends State<FlashCardGame> {
 
   //_____________get next card_______________
   void _nextCard() {
-    setState(() {
-      _card = FlashCard(student: _nextStudent(), key: ValueKey<int>(_randomOrder.length));
-    });
+    if(!_animationActive) {
+      setState(() {
+        _animationActive = true;
+        _card = FlashCard(student: _nextStudent(),
+            key: ValueKey<int>(
+                _randomOrder.length)); //should be unique for each 2 cards
+      });
+    }
   }
 
   Student _nextStudent() {
@@ -64,10 +70,30 @@ class _FlashCardGameState extends State<FlashCardGame> {
   //_____________animate card_______________
   Widget _animateCard() {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 600),
-      switchInCurve: Curves.ease,
-      switchOutCurve: Curves.ease,
+      duration: const Duration(milliseconds: 400),
+      transitionBuilder: _transitionBuilder,
+      switchInCurve: Curves.easeIn,
+      switchOutCurve: Curves.easeOut,
       child: _card,
+    );
+  }
+
+  Widget _transitionBuilder(Widget widget, Animation<double> animation) {
+    final anim = Tween(begin: 300.0, end: 0.0).animate(animation)..addListener(() {
+      if (animation.status == AnimationStatus.completed) {
+        _animationActive = false;
+      }
+    });
+    return AnimatedBuilder(
+      animation: anim,
+      child: widget,
+      builder: (context, widget) {
+        return Transform(
+          transform: Matrix4.translationValues(anim.value,0,0),
+          alignment: Alignment.center,
+          child: widget,
+        );
+      },
     );
   }
 
