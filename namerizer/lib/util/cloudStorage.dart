@@ -216,4 +216,11 @@ class CloudStorage {
   Future<bool> removeClass(String classCode) async {
     return true;
   }
+
+  Future<Map<(String,String),String>> getUsers() async {
+    return {
+      ("prof","123"): "UID1",
+      ("Momong","qwerty"): "UID2",
+    };
+  }
 }

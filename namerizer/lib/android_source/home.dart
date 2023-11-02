@@ -6,9 +6,7 @@ import "classPage.dart";
 //_____________________________Home____________________________________
 
 class Home extends StatefulWidget {
-  const Home({super.key, required this.title});
-
-  final String title;
+  const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -31,7 +29,6 @@ class _HomeState extends State<Home> {
     _initClasses();
   }
 
-  //_____________init classes_____________
   void _initClasses() async {
     setState(() {
       _loading = true;
@@ -202,7 +199,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text("Choose or create a class"),
         leading: IconButton(
           onPressed: () => SystemChannels.platform.invokeMethod("SystemNavigator.pop"),
           tooltip: "Quit to Home",
