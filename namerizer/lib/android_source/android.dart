@@ -14,7 +14,7 @@ class AndroidApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: LoginPage(),
+      home: const LoginPage(),
     );
   }
 }

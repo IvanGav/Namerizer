@@ -35,27 +35,28 @@ class CloudStorage {
   //Also, making methods that mimic the signature of real methods can be used with just constant
   //    predefined output, to simulate you getting stuff from firebase, without it being set up
   //Make sure to communicate any changes to this class so we both have updated version
-  Future<int> getInt(String name) async {
-    while(!_init) {
-      await initializeDefault();
-    }
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    DocumentSnapshot num = await firestore.collection("assignmentproject").doc(name).get(); //get "form" field for String and "count" for int
-    return num["count"] ?? 0;
-  }
 
-  Future<bool> setInt(String name, int count) async {
-    while(!_init) {
-      await initializeDefault();
-    }
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    firestore.collection("assignmentproject").doc(name).set({
-      "count": count,
-    }).catchError((error) {
-      return Future(false as FutureOr Function()); //i hate this language
-    });
-    return true;
-  }
+  // Future<int> getInt(String name) async {
+  //   while(!_init) {
+  //     await initializeDefault();
+  //   }
+  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //   DocumentSnapshot num = await firestore.collection("assignmentproject").doc(name).get(); //get "form" field for String and "count" for int
+  //   return num["count"] ?? 0;
+  // }
+  //
+  // Future<bool> setInt(String name, int count) async {
+  //   while(!_init) {
+  //     await initializeDefault();
+  //   }
+  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //   firestore.collection("assignmentproject").doc(name).set({
+  //     "count": count,
+  //   }).catchError((error) {
+  //     return Future(false as FutureOr Function()); //i hate this language
+  //   });
+  //   return true;
+  // }
 
   //_____________student_______________
   //get a list of all students for this professor
@@ -173,6 +174,7 @@ class CloudStorage {
 
   //_____________class_______________
   //get a list of all class codes for this professor
+  //only works if 'professor' uid is not null and is valid
   Future<List<String>> getClasses() async {
     return [ //will be changed shortly
       "1",
@@ -190,14 +192,31 @@ class CloudStorage {
       case "2":
         name = "CSCI 411 MTWTh";
       case "3":
-        name = "Hello World";
+        name = "Hello, World!";
       default:
         name = "New Class Name";
     };
     return name;
   }
 
+  //get a class name from a class code
+  Future<String> getClassProfessor(String classCode) async {
+    String name;
+    switch(classCode) {
+      case "1":
+        name = "Bryan Dixon";
+      case "2":
+        name = "Carter Tillquist";
+      case "3":
+        name = "Momong, the creator of app, the eternal overseer of data";
+      default:
+        name = "Some rando Angel";
+    };
+    return name;
+  }
+
   //get a map of class code to class name
+  //only works if 'professor' uid is not null and is valid
   Future<Map<String,String>> getClassNames() async {
     return {
       "1": "CINS 467 TTh",
@@ -208,22 +227,28 @@ class CloudStorage {
   }
 
   //create a class with a specified name and return a class code of that class
+  //only works if 'professor' uid is not null and is valid
   Future<String> addClass(String className) async {
     return "${Random().nextDouble()}";
   }
 
   //remove a class by class code
+  //only works if 'professor' uid is not null and is valid
   Future<bool> removeClass(String classCode) async {
     return true;
   }
 
   //_____________professor_______________
-  //get info of a user by their uid
-  Future<Map<String,String>> getUser(String uid) async {
+  //get info of a user by their uid; contains 'name','email','uid'
+  //only works if 'professor' uid is not null and is valid
+  Future<Map<String,String>> getUser() async {
+    if(professor == null) {
+      return {};
+    }
     return {
       "name": "Bryan Dixon",
       "email": "bdixon@email.org",
-      "uid": uid,
+      "uid": professor!,
     };
   }
 
