@@ -9,11 +9,11 @@ import "../firebase_options.dart";
 import "student.dart";
 
 class CloudStorage {
-  CloudStorage(this.professor);
+  CloudStorage({this.professor});
 
   //_____________fields_______________
   bool _init = false;
-  String professor;
+  String? professor;
 
   //_____________init_______________
   Future<void> initializeDefault() async {
@@ -217,10 +217,18 @@ class CloudStorage {
     return true;
   }
 
-  Future<Map<(String,String),String>> getUsers() async {
+  //_____________professor_______________
+  //get info of a user by their uid
+  Future<Map<String,String>> getUser(String uid) async {
     return {
-      ("prof","123"): "UID1",
-      ("Momong","qwerty"): "UID2",
+      "name": "Bryan Dixon",
+      "email": "bdixon@email.org",
+      "uid": uid,
     };
+  }
+
+  //create a new user
+  Future<bool> addUser(String uid, String name, String email, String password) async {
+    return true;
   }
 }
