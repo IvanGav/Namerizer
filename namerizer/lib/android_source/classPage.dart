@@ -5,7 +5,7 @@ import "package:namerizer/android_source/studentView.dart";
 import "../util/student.dart";
 import "../util/cloudStorage.dart";
 
-//_____________________________Home____________________________________
+//________________________ClassHome________________________
 
 class ClassHome extends StatefulWidget {
   const ClassHome({super.key, required this.code, required this.cloud});
@@ -17,7 +17,7 @@ class ClassHome extends StatefulWidget {
   State<ClassHome> createState() => _ClassHomeState();
 }
 
-//_______________________________HomeState____________________________________
+//___________________ClassHomeState____________________
 
 class _ClassHomeState extends State<ClassHome> {
   //_____________fields_______________

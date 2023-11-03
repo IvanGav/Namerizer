@@ -1,14 +1,16 @@
+import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "../util/cloudStorage.dart";
 import "classPage.dart";
+import "login.dart";
 
 //_____________________________Home____________________________________
 
 class Home extends StatefulWidget {
-  const Home({super.key, required this.title});
+  const Home({super.key, required this.uid});
 
-  final String title;
+  final String uid; //unique id of a professor
 
   @override
   State<Home> createState() => _HomeState();
@@ -21,7 +23,7 @@ class _HomeState extends State<Home> {
   bool _classesInitialized = false;
   late List<String> _classes; //contains all classes for this professor
   late Map<String,String> _classNames; //maps class code -> class name
-  final _cloud = CloudStorage("prof");
+  final _cloud = CloudStorage(professor: "prof");
   bool _loading = false; //can be set to true to show that a process is executing (such as async functions). Don't forget to set to false when done.
 
   //_____________init_______________
@@ -31,7 +33,6 @@ class _HomeState extends State<Home> {
     _initClasses();
   }
 
-  //_____________init classes_____________
   void _initClasses() async {
     setState(() {
       _loading = true;
@@ -41,6 +42,18 @@ class _HomeState extends State<Home> {
     setState(() {
       _loading = false;
       _classesInitialized = true;
+    });
+  }
+
+  void _logout() async {
+    await FirebaseAuth.instance.signOut();
+    setState(() {
+      Navigator.pop(context);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+        ),
+      );
     });
   }
 
@@ -202,7 +215,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text("Choose or create a class"),
         leading: IconButton(
           onPressed: () => SystemChannels.platform.invokeMethod("SystemNavigator.pop"),
           tooltip: "Quit to Home",
@@ -210,7 +223,7 @@ class _HomeState extends State<Home> {
         ),
         actions: [ //tailing
           IconButton(
-            onPressed: () { print("Logout is not yet implemented"); },
+            onPressed: _logout, //maybe grey out the button while trying to log out?
             tooltip: "Logout",
             icon: const Icon(Icons.logout),
           ),
