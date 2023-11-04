@@ -82,7 +82,7 @@ class _FlashCardState extends State<FlashCard> {
         width: 200,
         height: 200,
         child: Image(
-          image: widget.student.photo.image,
+          image: Image.network(widget.student.photo).image,
           width: 100,
           height: 100,
         ),

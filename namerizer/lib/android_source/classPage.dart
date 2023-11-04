@@ -34,14 +34,15 @@ class _ClassHomeState extends State<ClassHome> {
   }
 
   void _initStudents() async {
-    _students = await widget.cloud.getStudents(widget.code);
+    _students = (await widget.cloud.getStudents(widget.code))!; //should be fine
+    print("--${_students.length}");
     setState(() {
       _studentsInitialized = true;
     });
   }
 
   void _initTitle() async {
-    String title = await widget.cloud.getClassName(widget.code);
+    String title = (await widget.cloud.getClassName(widget.code))!; //should also be fine
     setState(() { _title = title; });
   }
 
@@ -76,7 +77,7 @@ class _ClassHomeState extends State<ClassHome> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(_title),
       ),
-      body: Center(
+      body: Center (//SingleChildScrollView( //?
           child: _getStudentList(),
       ),
       persistentFooterButtons: [

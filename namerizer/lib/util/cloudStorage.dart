@@ -1,9 +1,6 @@
-import "dart:async";
-import "dart:math";
-
 import "package:cloud_firestore/cloud_firestore.dart";
+import "package:firebase_storage/firebase_storage.dart";
 import "package:firebase_core/firebase_core.dart";
-import "package:flutter/material.dart";
 
 import "../firebase_options.dart";
 import "student.dart";
@@ -24,236 +21,183 @@ class CloudStorage {
     _init = true;
   }
 
-  //_____________int (example)_______________
-  //this is not a useful code, but an example of how to do a getter and setter, roughly
-  //maybe, functions like "create", "exists", "getAll" or "update" would be useful, not sure
-  //my intention is, these functions will take a student and a class as parameters,
-  //    and using credentials of the professor, stored somewhere globally, would
-  //    update the whole student's profile - if talking about a student
-  //    Or "createClass" function could be purely for creating a new class,
-  //    or "removeClass", you get the idea
-  //Also, making methods that mimic the signature of real methods can be used with just constant
-  //    predefined output, to simulate you getting stuff from firebase, without it being set up
-  //Make sure to communicate any changes to this class so we both have updated version
-
-  // Future<int> getInt(String name) async {
-  //   while(!_init) {
-  //     await initializeDefault();
-  //   }
-  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  //   DocumentSnapshot num = await firestore.collection("assignmentproject").doc(name).get(); //get "form" field for String and "count" for int
-  //   return num["count"] ?? 0;
-  // }
-  //
-  // Future<bool> setInt(String name, int count) async {
-  //   while(!_init) {
-  //     await initializeDefault();
-  //   }
-  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  //   firestore.collection("assignmentproject").doc(name).set({
-  //     "count": count,
-  //   }).catchError((error) {
-  //     return Future(false as FutureOr Function()); //i hate this language
-  //   });
-  //   return true;
-  // }
-
   //_____________student_______________
-  //get a list of all students for this professor
-  Future<List<Student>> getStudents(String classCode) async {
-    if(classCode == "1") {
-      return [
-        Student(firstName: "John",
-            lastName: "Smith",
-            preferredName: "Ainz Ooal Gown",
-            gender: Gender.nonbinary,
-            photo: Image.network(
-                "https://static.wikia.nocookie.net/the-muse-list/images/4/46/Ainz.jpg/revision/latest?cb=20200607025936")),
-        Student(firstName: "Hitori",
-            lastName: "Gotoh",
-            preferredName: "Bocchi",
-            gender: Gender.female,
-            photo: Image.network(
-                "https://ih0.redbubble.net/image.4908319264.0145/raf,360x360,075,t,fafafa:ca443f4786.jpg")),
-        Student(firstName: "Cid",
-            lastName: "Kageno",
-            gender: Gender.male,
-            photo: Image.network(
-                "https://i.pinimg.com/originals/48/78/9e/48789e1ee588a2d305c2a12a0ac6a443.jpg")),
-        Student(firstName: "Scrach",
-            lastName: "Cat",
-            gender: Gender.nonbinary,
-            photo: Image.network(
-                "https://static.wikia.nocookie.net/battlefordreamislandfanfiction/images/f/f2/Costume1_%281%29-1.png/revision/latest?cb=20190921173942")),
-        Student(firstName: "Geometry",
-            lastName: "Dash",
-            preferredName: "Cool Cube",
-            gender: Gender.nonbinary,
-            photo: Image.network(
-                "https://static.wikia.nocookie.net/geometry-dash/images/6/66/Cube012.png/revision/latest?cb=20150220064317")),
-        Student(firstName: "Factorio",
-            lastName: "Dude",
-            preferredName: "I AM ENGINEER!",
-            gender: Gender.male,
-            photo: Image.network(
-                "https://static.wikia.nocookie.net/p__/images/f/fa/Factorio_engineer_standing.png/revision/latest?cb=20210831004413&path-prefix=protagonist")),
-        Student(firstName: "Hakos",
-            lastName: "Baelz",
-            preferredName: "Bae",
-            gender: Gender.female,
-            photo: Image.network(
-                "https://static.miraheze.org/hololivewiki/thumb/a/a6/Hakos_Baelz_-_Portrait_VR_01.png/153px-Hakos_Baelz_-_Portrait_VR_01.png")),
-      ];
-    } else if(classCode == "2") {
-      return [
-        Student(firstName: "John",
-            lastName: "Smith",
-            preferredName: "Ainz Ooal Gown",
-            gender: Gender.nonbinary,
-            photo: Image.network(
-                "https://static.wikia.nocookie.net/the-muse-list/images/4/46/Ainz.jpg/revision/latest?cb=20200607025936")),
-        Student(firstName: "Hitori",
-            lastName: "Gotoh",
-            preferredName: "Bocchi",
-            gender: Gender.female,
-            photo: Image.network(
-                "https://ih0.redbubble.net/image.4908319264.0145/raf,360x360,075,t,fafafa:ca443f4786.jpg")),
-        Student(firstName: "Cid",
-            lastName: "Kageno",
-            gender: Gender.male,
-            photo: Image.network(
-                "https://i.pinimg.com/originals/48/78/9e/48789e1ee588a2d305c2a12a0ac6a443.jpg")),
-        Student(firstName: "Hakos",
-            lastName: "Baelz",
-            preferredName: "Bae",
-            gender: Gender.female,
-            photo: Image.network(
-                "https://static.miraheze.org/hololivewiki/thumb/a/a6/Hakos_Baelz_-_Portrait_VR_01.png/153px-Hakos_Baelz_-_Portrait_VR_01.png")),
-      ];
-    } else if(classCode == "3") {
-      return [
-        Student(firstName: "Scrach",
-            lastName: "Cat",
-            gender: Gender.nonbinary,
-            photo: Image.network(
-                "https://static.wikia.nocookie.net/battlefordreamislandfanfiction/images/f/f2/Costume1_%281%29-1.png/revision/latest?cb=20190921173942")),
-        Student(firstName: "Geometry",
-            lastName: "Dash",
-            preferredName: "Cool Cube",
-            gender: Gender.nonbinary,
-            photo: Image.network(
-                "https://static.wikia.nocookie.net/geometry-dash/images/6/66/Cube012.png/revision/latest?cb=20150220064317")),
-        Student(firstName: "Factorio",
-            lastName: "Dude",
-            preferredName: "I AM ENGINEER!",
-            gender: Gender.male,
-            photo: Image.network(
-                "https://static.wikia.nocookie.net/p__/images/f/fa/Factorio_engineer_standing.png/revision/latest?cb=20210831004413&path-prefix=protagonist")),
-        ];
-    } else {
-      return [
-        Student(firstName: "Hitori",
-            lastName: "Gotoh",
-            preferredName: "Bocchi",
-            gender: Gender.female,
-            photo: Image.network(
-                "https://ih0.redbubble.net/image.4908319264.0145/raf,360x360,075,t,fafafa:ca443f4786.jpg")),
-        Student(firstName: "Cid",
-            lastName: "Kageno",
-            gender: Gender.male,
-            photo: Image.network(
-                "https://i.pinimg.com/originals/48/78/9e/48789e1ee588a2d305c2a12a0ac6a443.jpg")),
-      ];
+  ///get a list of all students by class code
+  ///*return null if class doesn't exist*
+  Future<List<Student>?> getStudents(String classCode) async {
+    while(!_init) {
+      await initializeDefault();
     }
+    if(professor == null) {
+      return null;
+    }
+    QuerySnapshot<Map<String,dynamic>> students = await FirebaseFirestore.instance.collection("classes").doc(classCode).collection("students").get();
+    print("--num students ${students.docs.length}");
+    List<Student> studentsList = [];
+    for(var d in students.docs) {
+      Student s = Student(
+        firstName: d["first_name"],
+        lastName: d["last_name"],
+        preferredName: d["preferred_name"],
+        gender: GenderString.of(d["gender"]),
+        photo: d["picture"],
+      );
+      studentsList.add(s);
+    }
+    return studentsList;
   }
 
-  //add a student to a class with a specified class code
+  ///add a student to a class with a specified class code
+  ///*return false if class doesn't exist*
   Future<bool> addStudent(String classCode, Student student) async {
+    while(!_init) {
+      await initializeDefault();
+    }
+    final fireRef = FirebaseStorage.instance.ref();
+    final picRef = fireRef.child(student.fullName);
+    try {
+      picRef.putString(student.photo, format: PutStringFormat.dataUrl);
+    } on FirebaseException catch (e) {
+      return false;
+    }
+    await FirebaseFirestore.instance.collection("classes").doc(classCode).collection("students").add({
+      "first_name": student.firstName,
+      "last_name": student.lastName,
+      "preferred_name": student.lastName,
+      "gender": student.gender.name,
+      "picture": await fireRef.child(student.fullName).getDownloadURL(),
+    });
     return true;
   }
 
   //_____________class_______________
-  //get a list of all class codes for this professor
-  //only works if 'professor' uid is not null and is valid
-  Future<List<String>> getClasses() async {
-    return [ //will be changed shortly
-      "1",
-      "2",
-      "3",
-    ];
+  ///get a list of all class codes for this professor
+  ///*only works if 'professor' uid is not null and is valid*
+  Future<List<String>?> getClasses() async {
+    while(!_init) {
+      await initializeDefault();
+    }
+    if(professor == null) {
+      return null;
+    }
+    DocumentSnapshot<Map<String,dynamic>> prof = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
+    List<String> classes = [];
+    for(final c in prof["classes"]) {
+      if(c is String) {
+        classes.add(c);
+      } else {
+        print("--$c is not a string");
+      }
+    }
+    return classes;
   }
 
-  //get a class name from a class code
-  Future<String> getClassName(String classCode) async {
-    String name;
-    switch(classCode) {
-      case "1":
-        name = "CINS 467 TTh";
-      case "2":
-        name = "CSCI 411 MTWTh";
-      case "3":
-        name = "Hello, World!";
-      default:
-        name = "New Class Name";
-    };
-    return name;
+  ///get a class name of a class, by class code
+  ///*return null if class doesn't exist*
+  Future<String?> getClassName(String classCode) async {
+    while(!_init) {
+      await initializeDefault();
+    }
+    DocumentSnapshot<Map<String,dynamic>> classData = await FirebaseFirestore.instance.collection("classes").doc(classCode).get();
+    return classData["class_name"];
   }
 
-  //get a class name from a class code
-  Future<String> getClassProfessor(String classCode) async {
-    String name;
-    switch(classCode) {
-      case "1":
-        name = "Bryan Dixon";
-      case "2":
-        name = "Carter Tillquist";
-      case "3":
-        name = "Momong, the creator of app, the eternal overseer of data";
-      default:
-        name = "Some rando Angel";
-    };
-    return name;
+  ///get a professor name from a class code
+  ///*return null if class doesn't exist*
+  Future<String?> getClassProfessor(String classCode) async {
+    while(!_init) {
+      await initializeDefault();
+    }
+    DocumentSnapshot<Map<String,dynamic>> classData = await FirebaseFirestore.instance.collection("classes").doc(classCode).get();
+    return classData["prof_name"];
   }
 
   //get a map of class code to class name
   //only works if 'professor' uid is not null and is valid
-  Future<Map<String,String>> getClassNames() async {
-    return {
-      "1": "CINS 467 TTh",
-      "2": "CSCI 411 MTWTh",
-      "3": "Hello World",
-      "new_class_code": "New Class Name"
-    };
-  }
+  // Future<Map<String,String>> getClassNames() async {
+  //   while(!_init) {
+  //     await initializeDefault();
+  //   }
+  //   DocumentSnapshot<Map<String,dynamic>> classData = await FirebaseFirestore.instance.collection("classes").doc(classCode).get();
+  //   return classData["prof_name"];
+  // }
 
-  //create a class with a specified name and return a class code of that class
-  //only works if 'professor' uid is not null and is valid
-  Future<String> addClass(String className) async {
-    return "${Random().nextDouble()}";
+  ///create a class with a specified name and return a class code of that class
+  ///*only works if 'professor' uid is not null and is valid*
+  Future<String?> addClass(String className) async {
+    while(!_init) {
+      await initializeDefault();
+    }
+    if(professor == null || (await getUserName()) == null) {
+      return null;
+    }
+    String profName = (await getUserName())!;
+    //create and add a class to firebase
+    final DocumentReference classDoc = await FirebaseFirestore.instance.collection("classes").add({
+      "class_name": className,
+      "prof_name": profName,
+    });
+    classDoc.collection("classes").get(); //attempt to create a new collection
+    //add a class to professor
+    final profReference = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
+    List<String> classList = profReference["classes"];
+    classList.add(classDoc.id);
+    await FirebaseFirestore.instance.collection("profiles").doc(professor).update({
+      "classes": classList,
+    });
+    return classDoc.id;
   }
 
   //remove a class by class code
-  //only works if 'professor' uid is not null and is valid
+  //*only works if 'professor' uid is not null and is valid*
   Future<bool> removeClass(String classCode) async {
+    while(!_init) {
+      await initializeDefault();
+    }
+    if(professor == null) {
+      return false;
+    }
+    //create and add a class to firebase
+    await FirebaseFirestore.instance.collection("classes").doc(classCode).delete();
+    //add a class to professor
+    final profReference = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
+    List<String> classList = profReference["classes"];
+    classList.remove(classCode);
+    await FirebaseFirestore.instance.collection("profiles").doc(professor).update({
+      "classes": classList,
+    });
     return true;
   }
 
   //_____________professor_______________
   //get info of a user by their uid; contains 'name','email','uid'
   //only works if 'professor' uid is not null and is valid
-  Future<Map<String,String>> getUser() async {
+  Future<String?> getUserName() async {
     if(professor == null) {
-      return {};
+      return null;
     }
-    return {
-      "name": "Bryan Dixon",
-      "email": "bdixon@email.org",
-      "uid": professor!,
-    };
+    final name = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
+    return name["name"];
+  }
+
+  //get info of a user by their uid; contains 'name','email','password','classes list'
+  //only works if 'professor' uid is not null and is valid
+  Future<Map<String,dynamic>?> getUser() async {
+    if(professor == null) {
+      return null;
+    }
+    final name = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
+    return name.data();
   }
 
   //create a new user
   Future<bool> addUser(String uid, String name, String email, String password) async {
+    await FirebaseFirestore.instance.collection("profiles").doc(uid).set({
+      "name": name,
+      "email": email,
+      "password": password,
+      "classes": [],
+    });
     return true;
   }
 }
