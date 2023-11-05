@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import 'package:cross_file/cross_file.dart';
 
 class Student {
   Student({required this.firstName, required this.lastName, this.preferredName, required this.photo, required this.gender});
@@ -6,7 +6,7 @@ class Student {
   String firstName;
   String lastName;
   String? preferredName;
-  Image photo;
+  XFile photo;
   Gender gender;
 
   String get name {
@@ -25,7 +25,7 @@ enum Gender {
   male, female, nonbinary;
 }
 
-extension Gndr on Gender {
+extension GenderString on Gender {
   String get name {
     switch (this) {
       case Gender.male:
@@ -34,6 +34,15 @@ extension Gndr on Gender {
         return "Female";
       case Gender.nonbinary:
         return "Non Binary";
+    }
+  }
+  static Gender of(String str) {
+    if(str == "Male") {
+      return Gender.male;
+    } else if(str == "Female") {
+      return Gender.female;
+    } else {
+      return Gender.nonbinary;
     }
   }
 }

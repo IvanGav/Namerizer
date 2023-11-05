@@ -23,13 +23,14 @@ class _HomeState extends State<Home> {
   bool _classesInitialized = false;
   late List<String> _classes; //contains all classes for this professor
   late Map<String,String> _classNames; //maps class code -> class name
-  final _cloud = CloudStorage(professor: "prof");
+  late final CloudStorage _cloud;
   bool _loading = false; //can be set to true to show that a process is executing (such as async functions). Don't forget to set to false when done.
 
   //_____________init_______________
   @override
   void initState() {
     super.initState();
+    _cloud = CloudStorage(professor: widget.uid);
     _initClasses();
   }
 
@@ -37,8 +38,23 @@ class _HomeState extends State<Home> {
     setState(() {
       _loading = true;
     });
-    _classes = await _cloud.getClasses();
-    _classNames = await _cloud.getClassNames();
+    var classCodes = await _cloud.getClasses();
+    if(classCodes == null) {
+    setState(() {
+      _loading = false;
+    });
+    return;
+    }
+    _classes = classCodes;
+    _classNames = {};
+    for(String code in _classes) {
+      String? name = await _cloud.getClassName(code);
+      if(name == null) {
+        print("--Class name doesn't exist for class code: $code");
+        continue; //just silently ignore lol
+      }
+      _classNames[code] = name;
+    }
     setState(() {
       _loading = false;
       _classesInitialized = true;
@@ -140,11 +156,13 @@ class _HomeState extends State<Home> {
     setState(() {
       _loading = true;
     });
-    String classCode = await _cloud.addClass(className);
+    String? classCode = await _cloud.addClass(className);
     setState(() {
       _loading = false;
-      _classes.add(classCode);
-      _classNames[classCode] = className;
+      if(classCode != null) {
+        _classes.add(classCode);
+        _classNames[classCode] = className;
+      }
     });
   }
 
@@ -229,7 +247,9 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: _getClassList(context),
+      body: SingleChildScrollView(
+        child: _getClassList(context),
+      ),
       persistentFooterButtons: [
         FloatingActionButton(
           heroTag: "add_class", //idk what it is, but it throws exceptions without this tag thing

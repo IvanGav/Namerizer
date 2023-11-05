@@ -31,7 +31,7 @@ class _StudentViewState extends State<StudentView> {
     //image is too small
     return ListTile(
       leading: CircleAvatar( //too small?
-        backgroundImage: widget.student.photo.image,
+        backgroundImage: Image.network(widget.student.photo.path).image,
         radius: _expanded ? 30 : 20,
       ),
       trailing: null, //here goes pronunciation when expanded, if we get to it
