@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "../util/cloudStorage.dart";
-import "../util/student.dart";
 import "home.dart";
 import "package:firebase_auth/firebase_auth.dart";
 
@@ -49,47 +48,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    a();
     _tryLogin();
   }
-
-
-  void a() async {
-    var students = [
-      Student(firstName: "John",
-          lastName: "Smith",
-          preferredName: "Ainz Ooal Gown",
-          gender: Gender.nonbinary,
-          photo: "https://static.wikia.nocookie.net/the-muse-list/images/4/46/Ainz.jpg/revision/latest?cb=20200607025936"),
-      Student(firstName: "Cid",
-          lastName: "Kageno",
-          gender: Gender.male,
-          photo: "https://i.pinimg.com/originals/48/78/9e/48789e1ee588a2d305c2a12a0ac6a443.jpg"),
-      Student(firstName: "Scrach",
-          lastName: "Cat",
-          gender: Gender.nonbinary,
-          photo: "https://static.wikia.nocookie.net/battlefordreamislandfanfiction/images/f/f2/Costume1_%281%29-1.png/revision/latest?cb=20190921173942"),
-      Student(firstName: "Geometry",
-          lastName: "Dash",
-          preferredName: "Cool Cube",
-          gender: Gender.nonbinary,
-          photo: "https://static.wikia.nocookie.net/geometry-dash/images/6/66/Cube012.png/revision/latest?cb=20150220064317"),
-      Student(firstName: "Factorio",
-          lastName: "Dude",
-          preferredName: "I AM ENGINEER!",
-          gender: Gender.male,
-          photo: "https://static.wikia.nocookie.net/p__/images/f/fa/Factorio_engineer_standing.png/revision/latest?cb=20210831004413&path-prefix=protagonist"),
-      Student(firstName: "Hakos",
-          lastName: "Baelz",
-          preferredName: "Bae",
-          gender: Gender.female,
-          photo: "https://static.miraheze.org/hololivewiki/thumb/a/a6/Hakos_Baelz_-_Portrait_VR_01.png/153px-Hakos_Baelz_-_Portrait_VR_01.png"),
-    ];
-    for(Student s in students) {
-      await _cloud.addStudent("testClass", s);
-    }
-  }
-
 
   //____________login____________
   void _tryLogin() async {

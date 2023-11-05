@@ -1,4 +1,7 @@
+import "dart:math";
+
 import "package:cloud_firestore/cloud_firestore.dart";
+import "package:cross_file/cross_file.dart";
 import "package:firebase_storage/firebase_storage.dart";
 import "package:firebase_core/firebase_core.dart";
 
@@ -40,7 +43,7 @@ class CloudStorage {
         lastName: d["last_name"],
         preferredName: d["preferred_name"],
         gender: GenderString.of(d["gender"]),
-        photo: d["picture"],
+        photo: XFile(d["picture"]),
       );
       studentsList.add(s);
     }
@@ -53,21 +56,40 @@ class CloudStorage {
     while(!_init) {
       await initializeDefault();
     }
+    //I lost all hope. Nothing was working...
+    //But after 3 days of work and failures...
+    //At last, something worked... And I was so happy.
+    //And I'm too afraid to touch it until it breaks for a known and established reason...
+    //So I don't care if it's terrible code or not,
+    //  I just hope it works and I never have to touch it again...
     final fireRef = FirebaseStorage.instance.ref();
-    final picRef = fireRef.child(student.fullName);
+    final picRef = fireRef.child(classCode).child("${Random().nextDouble()}.png");
     try {
-      picRef.putString(student.photo, format: PutStringFormat.dataUrl);
+      await picRef.putData(
+        await student.photo.readAsBytes(),
+        SettableMetadata(contentType: "image/png")
+      ).whenComplete(() => _putStudent(classCode,student,picRef));
     } on FirebaseException catch (e) {
       return false;
+    } catch (e) {
+      return false;
     }
+    return true;
+  }
+
+  //TODO
+  Future<bool> deleteStudent(String classCode, Student student) async {
+    return false;
+  }
+
+  Future<void> _putStudent(String classCode, Student student, Reference picRef) async {
     await FirebaseFirestore.instance.collection("classes").doc(classCode).collection("students").add({
       "first_name": student.firstName,
       "last_name": student.lastName,
-      "preferred_name": student.lastName,
+      "preferred_name": student.preferredName,
       "gender": student.gender.name,
-      "picture": await fireRef.child(student.fullName).getDownloadURL(),
+      "picture": await picRef.getDownloadURL(),
     });
-    return true;
   }
 
   //_____________class_______________
@@ -98,6 +120,7 @@ class CloudStorage {
     while(!_init) {
       await initializeDefault();
     }
+    //Unhandled Exception: Bad state: cannot get a field on a DocumentSnapshotPlatform which does not exist
     DocumentSnapshot<Map<String,dynamic>> classData = await FirebaseFirestore.instance.collection("classes").doc(classCode).get();
     return classData["class_name"];
   }
@@ -140,7 +163,7 @@ class CloudStorage {
     classDoc.collection("classes").get(); //attempt to create a new collection
     //add a class to professor
     final profReference = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
-    List<String> classList = profReference["classes"];
+    List<dynamic> classList = profReference["classes"];
     classList.add(classDoc.id);
     await FirebaseFirestore.instance.collection("profiles").doc(professor).update({
       "classes": classList,
@@ -157,11 +180,11 @@ class CloudStorage {
     if(professor == null) {
       return false;
     }
-    //create and add a class to firebase
+    //remove a class from firebase
     await FirebaseFirestore.instance.collection("classes").doc(classCode).delete();
-    //add a class to professor
+    //remove a class from a professor
     final profReference = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
-    List<String> classList = profReference["classes"];
+    List<dynamic> classList = profReference["classes"];
     classList.remove(classCode);
     await FirebaseFirestore.instance.collection("profiles").doc(professor).update({
       "classes": classList,

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:cross_file/cross_file.dart';
 
 class Student {
   Student({required this.firstName, required this.lastName, this.preferredName, required this.photo, required this.gender});
@@ -6,7 +6,7 @@ class Student {
   String firstName;
   String lastName;
   String? preferredName;
-  String photo; //path to an image
+  XFile photo;
   Gender gender;
 
   String get name {
