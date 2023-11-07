@@ -34,20 +34,28 @@ class CloudStorage {
     if(professor == null) {
       return null;
     }
-    QuerySnapshot<Map<String,dynamic>> students = await FirebaseFirestore.instance.collection("classes").doc(classCode).collection("students").get();
-    print("--num students ${students.docs.length}");
-    List<Student> studentsList = [];
-    for(var d in students.docs) {
-      Student s = Student(
-        firstName: d["first_name"],
-        lastName: d["last_name"],
-        preferredName: d["preferred_name"],
-        gender: GenderString.of(d["gender"]),
-        photo: XFile(d["picture"]),
-      );
-      studentsList.add(s);
+    try {
+      QuerySnapshot<Map<String, dynamic>> students = await FirebaseFirestore
+          .instance.collection("classes").doc(classCode)
+          .collection("students")
+          .get();
+      print("--num students ${students.docs.length}");
+      List<Student> studentsList = [];
+      for (var d in students.docs) {
+        Student s = Student(
+          firstName: d["first_name"],
+          lastName: d["last_name"],
+          preferredName: d["preferred_name"],
+          gender: GenderString.of(d["gender"]),
+          photo: XFile(d["picture"]),
+        );
+        studentsList.add(s);
+      }
+      return studentsList;
+    } catch (e) {
+      print("--getStudents wasn't successful");
+      return null;
     }
-    return studentsList;
   }
 
   ///add a student to a class with a specified class code
@@ -62,19 +70,25 @@ class CloudStorage {
     //And I'm too afraid to touch it until it breaks for a known and established reason...
     //So I don't care if it's terrible code or not,
     //  I just hope it works and I never have to touch it again...
-    final fireRef = FirebaseStorage.instance.ref();
-    final picRef = fireRef.child(classCode).child("${Random().nextDouble()}.png");
     try {
-      await picRef.putData(
-        await student.photo.readAsBytes(),
-        SettableMetadata(contentType: "image/png")
-      ).whenComplete(() => _putStudent(classCode,student,picRef));
-    } on FirebaseException catch (e) {
-      return false;
+      final fireRef = FirebaseStorage.instance.ref();
+      final picRef = fireRef.child(classCode).child(
+          "${Random().nextDouble()}.png");
+      try {
+        await picRef.putData(
+            await student.photo.readAsBytes(),
+            SettableMetadata(contentType: "image/png")
+        ).whenComplete(() => _putStudent(classCode, student, picRef));
+      } on FirebaseException catch (e) {
+        return false;
+      } catch (e) {
+        return false;
+      }
+      return true;
     } catch (e) {
+      print("--addStudent wasn't successful");
       return false;
     }
-    return true;
   }
 
   //TODO
@@ -102,16 +116,22 @@ class CloudStorage {
     if(professor == null) {
       return null;
     }
-    DocumentSnapshot<Map<String,dynamic>> prof = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
     List<String> classes = [];
-    for(final c in prof["classes"]) {
-      if(c is String) {
-        classes.add(c);
-      } else {
-        print("--$c is not a string");
+    try {
+      DocumentSnapshot<Map<String, dynamic>> prof = await FirebaseFirestore
+          .instance.collection("profiles").doc(professor).get();
+      for (final c in prof["classes"]) {
+        if (c is String) {
+          classes.add(c);
+        } else {
+          print("--$c is not a string");
+        }
       }
+      return classes;
+    } catch (e) {
+      print("--getClasses wasn't successful");
+      return null;
     }
-    return classes;
   }
 
   ///get a class name of a class, by class code
@@ -121,8 +141,14 @@ class CloudStorage {
       await initializeDefault();
     }
     //Unhandled Exception: Bad state: cannot get a field on a DocumentSnapshotPlatform which does not exist
-    DocumentSnapshot<Map<String,dynamic>> classData = await FirebaseFirestore.instance.collection("classes").doc(classCode).get();
-    return classData["class_name"];
+    try {
+      DocumentSnapshot<Map<String, dynamic>> classData = await FirebaseFirestore
+          .instance.collection("classes").doc(classCode).get();
+      return classData["class_name"];
+    } catch (e) {
+      print("--getClassName wasn't successful");
+      return null;
+    }
   }
 
   ///get a professor name from a class code
@@ -131,19 +157,15 @@ class CloudStorage {
     while(!_init) {
       await initializeDefault();
     }
-    DocumentSnapshot<Map<String,dynamic>> classData = await FirebaseFirestore.instance.collection("classes").doc(classCode).get();
-    return classData["prof_name"];
+    try {
+      DocumentSnapshot<Map<String, dynamic>> classData = await FirebaseFirestore
+          .instance.collection("classes").doc(classCode).get();
+      return classData["prof_name"];
+    } catch (e) {
+      print("--getClassProfessor wasn't successful");
+      return null;
+    }
   }
-
-  //get a map of class code to class name
-  //only works if 'professor' uid is not null and is valid
-  // Future<Map<String,String>> getClassNames() async {
-  //   while(!_init) {
-  //     await initializeDefault();
-  //   }
-  //   DocumentSnapshot<Map<String,dynamic>> classData = await FirebaseFirestore.instance.collection("classes").doc(classCode).get();
-  //   return classData["prof_name"];
-  // }
 
   ///create a class with a specified name and return a class code of that class
   ///*only works if 'professor' uid is not null and is valid*
@@ -151,24 +173,33 @@ class CloudStorage {
     while(!_init) {
       await initializeDefault();
     }
-    if(professor == null || (await getUserName()) == null) {
+    try {
+      if (professor == null || (await getUserName()) == null) {
+        return null;
+      }
+      String profName = (await getUserName())!;
+      //create and add a class to firebase
+      final DocumentReference classDoc = await FirebaseFirestore.instance
+          .collection("classes").add({
+        "class_name": className,
+        "prof_name": profName,
+      });
+      classDoc.collection("classes").get(); //attempt to create a new collection
+      //add a class to professor
+      final profReference = await FirebaseFirestore.instance.collection(
+          "profiles").doc(professor).get();
+      List<dynamic> classList = profReference["classes"];
+      classList.add(classDoc.id);
+      await FirebaseFirestore.instance.collection("profiles")
+          .doc(professor)
+          .update({
+        "classes": classList,
+      });
+      return classDoc.id;
+    } catch (e) {
+      print("--addClass wasn't successful");
       return null;
     }
-    String profName = (await getUserName())!;
-    //create and add a class to firebase
-    final DocumentReference classDoc = await FirebaseFirestore.instance.collection("classes").add({
-      "class_name": className,
-      "prof_name": profName,
-    });
-    classDoc.collection("classes").get(); //attempt to create a new collection
-    //add a class to professor
-    final profReference = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
-    List<dynamic> classList = profReference["classes"];
-    classList.add(classDoc.id);
-    await FirebaseFirestore.instance.collection("profiles").doc(professor).update({
-      "classes": classList,
-    });
-    return classDoc.id;
   }
 
   //remove a class by class code
@@ -180,16 +211,26 @@ class CloudStorage {
     if(professor == null) {
       return false;
     }
-    //remove a class from firebase
-    await FirebaseFirestore.instance.collection("classes").doc(classCode).delete();
-    //remove a class from a professor
-    final profReference = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
-    List<dynamic> classList = profReference["classes"];
-    classList.remove(classCode);
-    await FirebaseFirestore.instance.collection("profiles").doc(professor).update({
-      "classes": classList,
-    });
-    return true;
+    try {
+      //remove a class from firebase
+      await FirebaseFirestore.instance.collection("classes")
+          .doc(classCode)
+          .delete();
+      //remove a class from a professor
+      final profReference = await FirebaseFirestore.instance.collection(
+          "profiles").doc(professor).get();
+      List<dynamic> classList = profReference["classes"];
+      classList.remove(classCode);
+      await FirebaseFirestore.instance.collection("profiles")
+          .doc(professor)
+          .update({
+        "classes": classList,
+      });
+      return true;
+    } catch (e) {
+      print("--removeClass wasn't successful");
+      return false;
+    }
   }
 
   //_____________professor_______________
@@ -199,8 +240,14 @@ class CloudStorage {
     if(professor == null) {
       return null;
     }
-    final name = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
-    return name["name"];
+    try {
+      final name = await FirebaseFirestore.instance.collection("profiles").doc(
+          professor).get();
+      return name["name"];
+    } catch (e) {
+      print("--getUserName wasn't successful");
+      return null;
+    }
   }
 
   //get info of a user by their uid; contains 'name','email','password','classes list'
@@ -209,18 +256,29 @@ class CloudStorage {
     if(professor == null) {
       return null;
     }
-    final name = await FirebaseFirestore.instance.collection("profiles").doc(professor).get();
-    return name.data();
+    try {
+      final name = await FirebaseFirestore.instance.collection("profiles").doc(
+          professor).get();
+      return name.data();
+    } catch (e) {
+      print("--getUser wasn't successful");
+      return null;
+    }
   }
 
   //create a new user
   Future<bool> addUser(String uid, String name, String email, String password) async {
-    await FirebaseFirestore.instance.collection("profiles").doc(uid).set({
-      "name": name,
-      "email": email,
-      "password": password,
-      "classes": [],
-    });
-    return true;
+    try {
+      await FirebaseFirestore.instance.collection("profiles").doc(uid).set({
+        "name": name,
+        "email": email,
+        "password": password,
+        "classes": [],
+      });
+      return true;
+    } catch (e) {
+      print("--addUser wasn't successful");
+      return false;
+    }
   }
 }

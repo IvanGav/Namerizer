@@ -25,6 +25,7 @@ class _HomeState extends State<Home> {
   late Map<String,String> _classNames; //maps class code -> class name
   late final CloudStorage _cloud;
   bool _loading = false; //can be set to true to show that a process is executing (such as async functions). Don't forget to set to false when done.
+  bool _deleting = false;
 
   //_____________init_______________
   @override
@@ -34,16 +35,18 @@ class _HomeState extends State<Home> {
     _initClasses();
   }
 
-  void _initClasses() async {
+  Future<void> _initClasses() async {
     setState(() {
+      _classesInitialized = false;
       _loading = true;
     });
     var classCodes = await _cloud.getClasses();
     if(classCodes == null) {
-    setState(() {
-      _loading = false;
-    });
-    return;
+      setState(() {
+        _loading = false;
+      });
+      print("--could not get class codes");
+      return;
     }
     _classes = classCodes;
     _classNames = {};
@@ -73,86 +76,115 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void _snack(BuildContext context, String message) {
+    var snackBar = SnackBar(
+      content: Text(message),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   //_____________add/remove a class_____________
   void _promptAddClass(BuildContext context) {
     final TextEditingController formControl = TextEditingController();
-    var form = TextFormField(
-      controller: formControl,
-      validator: (_) => null, //always accept
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: "Class Name",
+    final formKey = GlobalKey<FormState>();
+    var form = Form(
+      key: formKey,
+      child: TextFormField(
+        controller: formControl,
+        validator: (text) => (text == null || text.isEmpty) ? "Class must have a name." : null,
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: "Class Name",
+        ),
       ),
     );
     showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Enter a Class Name:"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text("A class with this name will be created."),
-              const SizedBox(height: 20),
-              form,
-            ],
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Enter a Class Name:"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("A class with this name will be created."),
+            const SizedBox(height: 20),
+            form,
+          ],
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Cancel")
           ),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("Cancel")
-            ),
-            TextButton(
-              onPressed: () {
-                _addClass(formControl.text);
+          TextButton(
+            onPressed: () {
+              if(formKey.currentState!.validate()) {
+                _addClass(formControl.text).then((value) { //if returns false, say couldn't create a class
+                  if(value == false) {
+                    _snack(context,"Couldn't add a class.");
+                  }
+                  return value;
+                });
                 Navigator.of(context).pop();
-              },
-              child: const Text("Create")
-            ),
-          ],
-        )
+              }
+            },
+            child: const Text("Create")
+          ),
+        ],
+      )
     );
   }
 
-  void _promptRemoveClass(BuildContext context) {
+  void _promptRemoveClass(BuildContext context, String classCode) {
     final TextEditingController formControl = TextEditingController();
-    var form = TextFormField(
-      controller: formControl,
-      validator: (_) => null, //always accept
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: "Class Name",
+    final formKey = GlobalKey<FormState>();
+    var form = Form(
+      key: formKey,
+      child: TextFormField(
+        controller: formControl,
+        validator: (text) => (text == _classNames[classCode]) ? null : "Please enter the displayed name to delete.",
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: _classNames[classCode],
+        ),
       ),
     );
     showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Enter a Class Name:"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text("A class with this name will be permanently deleted.", style: TextStyle(color: Colors.red)),
-              const SizedBox(height: 20),
-              form,
-            ],
-          ),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("Cancel")
-            ),
-            TextButton(
-                onPressed: () {
-                  _removeClass(formControl.text);
-                  Navigator.of(context).pop();
-                },
-                child: const Text("Delete", style: TextStyle(color: Colors.red))
-            ),
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Enter a Class Name:"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("A class with this name will be permanently deleted.", style: TextStyle(color: Colors.red)),
+            const SizedBox(height: 20),
+            form,
           ],
-        )
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Cancel"),
+          ),
+          TextButton(
+              onPressed: () {
+                if(formKey.currentState!.validate()) {
+                  _removeClass(classCode).then((value) { //if returns false, say couldn't remove a class
+                    if(value == false) {
+                      _snack(context,"Couldn't remove a class.");
+                    }
+                    return value;
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text("Delete", style: TextStyle(color: Colors.red))
+          ),
+        ],
+      )
     );
   }
 
-  Future<void> _addClass(String className) async {
+  Future<bool> _addClass(String className) async {
     setState(() {
       _loading = true;
     });
@@ -164,65 +196,60 @@ class _HomeState extends State<Home> {
         _classNames[classCode] = className;
       }
     });
+    return classCode != null;
   }
 
-  Future<void> _removeClass(String className) async {
+  Future<bool> _removeClass(String classCode) async {
     setState(() {
       _loading = true;
     });
-    String classCode = "";
-    for(var e in _classNames.entries) {
-      if(e.value == className) {
-        classCode = e.key;
-      }
-    }
-    if(classCode == "") {
-      setState(() {
-        _loading = false;
-      });
-      //no such class (name) exists
-      return;
-    }
-    bool result = false;
-    result = await _cloud.removeClass(classCode);
-    if(result == false) {
-      setState(() {
-        _loading = false;
-      });
-      //no remove wasn't successful
-      return;
-    }
-    //remove all classes with that name (CHANGE LATER MAYBE)
+    bool result = await _cloud.removeClass(classCode);
     setState(() {
       _loading = false;
-      _classes.removeWhere((element) => element == classCode);
-      _classNames.remove(classCode);
+      if(result) {
+        //i could also retrieve them from firebase again, but you know, why bother
+        _classes.removeWhere((element) => element == classCode);
+        _classNames.remove(_classNames[classCode]);
+      }
     });
+    return result;
   }
 
   //_____________class list widget getter_______________
   Widget _getClassList(BuildContext context) {
     if(!_classesInitialized) {
-      return const Text("Please Wait...");
+      return RefreshIndicator( //TEST TODO
+        onRefresh: _initClasses,
+        child: Center(
+          child: _loading ? const CircularProgressIndicator() : const Text("Something went wrong, try refreshing.")
+        ),
+      );
     }
-    List<Widget> classList = [];
-    for(var c in _classes) {
-      classList.add(_getClassTile(c, context));
-    }
-    return Column(//ListView
-      children: classList,
+    return RefreshIndicator(
+      onRefresh: _initClasses,
+      child: ListView.builder(
+        itemBuilder: (context,index) => _getClassTile(_classes[index],context),
+        itemCount: _classes.length,
+      ),
     );
   }
 
   Widget _getClassTile(String classCode, BuildContext context) {
     return ListTile(
       title: Text(_classNames[classCode] == null ? "ERROR: Class Doesn't Exist" : _classNames[classCode]!),
-      onTap: () => {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ClassHome(code: classCode, cloud: _cloud),
-          ),
-        )
+      onTap: () {
+        if(_deleting) {
+          _promptRemoveClass(context, classCode);
+          setState(() {
+            _deleting = false;
+          });
+        } else {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ClassHome(code: classCode, cloud: _cloud),
+            ),
+          );
+        }
       }
     );
   }
@@ -247,19 +274,24 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: _getClassList(context),
-      ),
-      persistentFooterButtons: [
+      body: _getClassList(context),
+      persistentFooterButtons: _deleting ? [ //deleting (cancel button)
+        FloatingActionButton(
+          heroTag: "cancel_remove",
+          onPressed: _loading ? null : () => setState(() => _deleting = false),
+          tooltip: "Cancel",
+          child: const Icon(Icons.cancel),
+        ),
+      ] : [ //not deleting (add/remove class buttons)
         FloatingActionButton(
           heroTag: "add_class", //idk what it is, but it throws exceptions without this tag thing
-          onPressed: () => _promptAddClass(context),
+          onPressed: _loading ? null : () => _promptAddClass(context),
           tooltip: "Add a class",
           child: const Icon(Icons.add),
         ),
         FloatingActionButton(
           heroTag: "remove_class",
-          onPressed: () => _promptRemoveClass(context),
+          onPressed: _loading ? null : () => setState(() => _deleting = true),
           tooltip: "Remove a class",
           child: const Icon(Icons.remove),
         ),
