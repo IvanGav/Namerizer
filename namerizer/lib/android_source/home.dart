@@ -35,16 +35,18 @@ class _HomeState extends State<Home> {
     _initClasses();
   }
 
-  void _initClasses() async {
+  Future<void> _initClasses() async {
     setState(() {
+      _classesInitialized = false;
       _loading = true;
     });
     var classCodes = await _cloud.getClasses();
     if(classCodes == null) {
-    setState(() {
-      _loading = false;
-    });
-    return;
+      setState(() {
+        _loading = false;
+      });
+      print("--could not get class codes");
+      return;
     }
     _classes = classCodes;
     _classNames = {};
@@ -202,33 +204,33 @@ class _HomeState extends State<Home> {
       _loading = true;
     });
     bool result = await _cloud.removeClass(classCode);
-    if(result == false) {
-      setState(() {
-        _loading = false;
-      });
-      //no remove wasn't successful
-      return false;
-    }
     setState(() {
       _loading = false;
-      //i could also retrieve them from firebase again, but you know, why bother
-      _classes.removeWhere((element) => element == classCode);
-      _classNames.remove(_classNames[classCode]);
+      if(result) {
+        //i could also retrieve them from firebase again, but you know, why bother
+        _classes.removeWhere((element) => element == classCode);
+        _classNames.remove(_classNames[classCode]);
+      }
     });
-    return true;
+    return result;
   }
 
   //_____________class list widget getter_______________
   Widget _getClassList(BuildContext context) {
     if(!_classesInitialized) {
-      return const Text("Please Wait...");
+      return RefreshIndicator( //TEST TODO
+        onRefresh: _initClasses,
+        child: Center(
+          child: _loading ? const CircularProgressIndicator() : const Text("Something went wrong, try refreshing.")
+        ),
+      );
     }
-    List<Widget> classList = [];
-    for(var c in _classes) {
-      classList.add(_getClassTile(c, context));
-    }
-    return Column( //ListView
-      children: classList,
+    return RefreshIndicator(
+      onRefresh: _initClasses,
+      child: ListView.builder(
+        itemBuilder: (context,index) => _getClassTile(_classes[index],context),
+        itemCount: _classes.length,
+      ),
     );
   }
 
@@ -272,26 +274,24 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: _getClassList(context),
-      ),
+      body: _getClassList(context),
       persistentFooterButtons: _deleting ? [ //deleting (cancel button)
         FloatingActionButton(
           heroTag: "cancel_remove",
-          onPressed: () => setState(() => _deleting = false),
+          onPressed: _loading ? null : () => setState(() => _deleting = false),
           tooltip: "Cancel",
           child: const Icon(Icons.cancel),
         ),
       ] : [ //not deleting (add/remove class buttons)
         FloatingActionButton(
           heroTag: "add_class", //idk what it is, but it throws exceptions without this tag thing
-          onPressed: () => _promptAddClass(context),
+          onPressed: _loading ? null : () => _promptAddClass(context),
           tooltip: "Add a class",
           child: const Icon(Icons.add),
         ),
         FloatingActionButton(
           heroTag: "remove_class",
-          onPressed: () => setState(() => _deleting = true),
+          onPressed: _loading ? null : () => setState(() => _deleting = true),
           tooltip: "Remove a class",
           child: const Icon(Icons.remove),
         ),
