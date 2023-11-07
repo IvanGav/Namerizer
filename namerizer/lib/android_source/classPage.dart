@@ -76,6 +76,13 @@ class _ClassHomeState extends State<ClassHome> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(_title),
+        // actions: [ //tailing
+        //   IconButton(
+        //     onPressed: _logout,
+        //     tooltip: "Set Up",
+        //     icon: const Icon(Icons.settings),
+        //   ),
+        // ],
       ),
       body: Center (//SingleChildScrollView( //?
           child: _getStudentList(),
