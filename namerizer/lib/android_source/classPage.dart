@@ -79,13 +79,13 @@ class _ClassHomeState extends State<ClassHome> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(_title),
-        // actions: [ //tailing
-        //   IconButton(
-        //     onPressed: ,
-        //     tooltip: "Set Up",
-        //     icon: const Icon(Icons.settings),
-        //   ),
-        // ],
+        actions: [ //tailing
+          IconButton(
+            onPressed: () { print("--Not yet implemented"); },
+            tooltip: "Set Up",
+            icon: const Icon(Icons.settings),
+          ),
+        ],
       ),
       body: _getStudentList(),
       persistentFooterButtons: [
@@ -97,13 +97,13 @@ class _ClassHomeState extends State<ClassHome> {
         ),
         FloatingActionButton(
           heroTag: "match_name_game",
-          onPressed: () { print("The game is not yet implemented"); },
+          onPressed: () { print("--The game is not yet implemented"); },
           tooltip: "Match Name",
           child: const Text("Match Name"),
         ),
         FloatingActionButton(
           heroTag: "match_photo_game",
-          onPressed: () { print("The game is not yet implemented"); },
+          onPressed: () { print("--The game is not yet implemented"); },
           tooltip: "Match Photo",
           child: const Text("Match Photo"),
         ),

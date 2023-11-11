@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
       );
       print("--credentials passed");
     } on FirebaseAuthException catch (e) {
-      if (e.code == "INVALID_LOGIN_CREDENTIALS") {
+      if (e.code == "INVALID_LOGIN_CREDENTIALS" || e.code == "channel-error") {
         error = INVALID_CREDENTIALS;
       } else if (e.code == "user-not-found" || e.code == "invalid-email") {
         error = EMAIL_ERROR;

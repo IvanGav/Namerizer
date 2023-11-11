@@ -12,6 +12,9 @@ relatively independent of implementation.
 **Warning: Behavior of functions has not been tested when
 codes/UID/fields/etc don't exist!**
 
+**Note: Functions can return error values (false/null)
+when there was a network/access/etc error.**
+
 # Firebase
 
 The root contains:
@@ -34,6 +37,9 @@ A student contains:
 - String or null **preferred_name**
 - String **picture**, which contains url of picture
 - String **gender**, which is either: "Male", "Female" or "Non Binary"
+- String **key**, which is used as name "key.png" for
+the picture in storage (is not included in Student class,
+used only for deleting a student)
 
 **profiles** contains professor profiles, by **uid**.
 
