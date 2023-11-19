@@ -1,13 +1,14 @@
-import 'package:cross_file/cross_file.dart';
+import "package:cross_file/cross_file.dart";
 
 class Student {
-  Student({required this.firstName, required this.lastName, this.preferredName, required this.photo, required this.gender});
+  Student({required this.firstName, required this.lastName, this.preferredName, required this.photo, required this.gender, this.id});
 
   String firstName;
   String lastName;
   String? preferredName;
   XFile photo;
   Gender gender;
+  String? id;
 
   String get name {
     if(preferredName != null) {

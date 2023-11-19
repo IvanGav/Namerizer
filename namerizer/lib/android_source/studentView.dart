@@ -25,6 +25,25 @@ class _StudentViewState extends State<StudentView> {
   //   super.initState();
   // }
 
+  //_____________methods_______________
+  void expand() {
+    setState(() {
+      _expanded = true;
+    });
+  }
+
+  void minimize() {
+    setState(() {
+      _expanded = false;
+    });
+  }
+
+  void toggle() {
+    setState(() {
+      _expanded = !_expanded;
+    });
+  }
+
   //_____________build_______________
   @override
   Widget build(BuildContext context) {
@@ -45,11 +64,7 @@ class _StudentViewState extends State<StudentView> {
       ) : null,
       dense: true,
       visualDensity: _expanded ? const VisualDensity(vertical: VisualDensity.maximumDensity) : const VisualDensity(vertical: 0),
-      onTap: () => {
-        setState(() {
-          _expanded = !_expanded;
-        })
-      }
+      onTap: toggle,
     );
   }
 }
