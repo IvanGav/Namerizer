@@ -1,64 +1,492 @@
+import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:typed_data';
+import "package:firebase_auth/firebase_auth.dart";
+import "package:firebase_core/firebase_core.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'dart:io';
+import 'package:cross_file/cross_file.dart';
+import 'dart:convert';
+import 'package:image_picker_web/image_picker_web.dart';
+
+
+
+import "../util/cloudStorage.dart";
+import "../firebase_options.dart";
+import "../util/student.dart";
+
 
 class WebApp extends StatelessWidget {
   const WebApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Web",
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
+        textTheme: GoogleFonts.calistogaTextTheme(), 
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true, fillColor: Colors.white,
+          errorStyle: TextStyle(color: Colors.red),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(width: 2, color: Colors.black),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(width: 2, color: Colors.red.shade900),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
       ),
-      home: const WebHome(title: "Web Home"),
+      home: const WebHome(),
     );
   }
 }
 
+/*=====================================================
+  Home Page where user input class code to join a class
+  =====================================================*/
 class WebHome extends StatefulWidget {
-  const WebHome({super.key, required this.title});
-
-  final String title;
-
+  const WebHome({super.key});
   @override
   State<WebHome> createState() => _WebHomeState();
 }
-
+ 
 class _WebHomeState extends State<WebHome> {
-  int _counter = 0;
+  final classCodeController = TextEditingController(); 
+  String? error;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  void _goToVerifyPage() async{
+    String classCode = classCodeController.text;
+    if (classCode.isEmpty){setState((){error = "Please Enter A Code";}); return;}
+
+    String? className = await CloudStorage().getClassName(classCode);
+    if (className == null){
+      setState((){error = "Class Not Found";}); 
+      return;
+    }
+    String? proffName = await CloudStorage().getClassProfessor(classCode);
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => VerifyPage(
+          classCode: classCode, 
+          className: className,
+          proffName: proffName
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+          children: [
+            /*_______Backround Image_______*/
+            Positioned(
+              top: 0, left: 0, right: 0, bottom: 0,
+              child: Image.asset('images/background.jpg', fit: BoxFit.cover)
+            ),
+            Center(child: Column(
+              children: [
+                /*_______(Logo, Name, Underline) displayed_______*/
+                SizedBox(height: 20),
+                Image.asset('images/logo.png'),
+                Text('Namerizer', style: TextStyle(fontSize: 30, color: Colors.white)),
+                Container(width: 300, height: 2, color: Colors.white),
+                /*_______Class Code Text Field_______*/
+                SizedBox(height: 180),
+                Container(
+                  width: 300,
+                  child: TextField(
+                    controller: classCodeController,
+                    cursorColor: Colors.black,
+                    style: TextStyle(color: Colors.black, fontSize: 18),
+                    decoration: InputDecoration(
+                      hintText: "Enter Class Code",
+                      errorText: error
+                    )
+                  )
+                ),
+                /*_______Submit Button_______*/
+                SizedBox(height: 180),
+                ElevatedButton(
+                  onPressed: _goToVerifyPage,
+                  child: Text("Submit", style: TextStyle(fontSize: 20)),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(150, 50),
+                    primary: Colors.green,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: BorderSide(color: Colors.black, width: 2) 
+                    )             
+                  )
+                )  
+              ]
+            ))
+          ]
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              "Please, press the button: ",
-            ),
-            Text(
-              "$_counter",
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+    );
+  }
+}
+
+/*===================================================================
+  Verify Page Where Website Dispays The Class They Are Connecting To 
+  ===================================================================*/ 
+class VerifyPage extends StatelessWidget {
+  VerifyPage({Key? key, required this.classCode, required this.className, required this.proffName}) : super(key: key);
+  final String classCode;
+  final String? className;
+  final String? proffName;
+
+
+  void _goToSubmitInfoPage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => SubmitInfoPage(
+          classCode: classCode, 
+          className: className,
         ),
+      )
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          /*_______Backround Image_______*/
+          Positioned(
+            top: 0, left: 0, right: 0, bottom: 0,
+            child: Image.asset('images/background.jpg', fit: BoxFit.cover),
+          ),
+      
+          Center(child: Column(
+            children: [
+              /*_______(Logo, Name, Underline) Dispayed_______*/
+              SizedBox(height: 20),
+              Image.asset('images/logo.png'),
+              Text('Namerizer', style: TextStyle(fontSize: 30, color: Colors.white,)),
+              Container(width: 300, height:2, color:Colors.white),
+              /*______Prints Class Name & Proff Name_______*/
+              SizedBox(height: 130),
+              Text("Is This Your Class?", style: TextStyle(fontSize: 20, color: Colors.white)),
+              SizedBox(height: 10),
+              Container(
+                height: 80, width: 300,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(width: 2, color: Colors.black),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(height: 4),
+                    Row(children: [
+                      Text(" Class: ", style: TextStyle(fontSize: 20)),
+                      Text("$className", style: TextStyle(fontSize: 20))
+                    ]),
+                    SizedBox(height: 8),
+                    Row(children: [
+                      Text(" Proff: ", style: TextStyle(fontSize: 20)),
+                      Text("$proffName", style: TextStyle(fontSize: 20))
+                    ]),
+                    SizedBox(height: 4),
+                  ],
+                ),
+              ),
+              SizedBox(height: 120),
+              Center(child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {Navigator.of(context).pop();},
+                    child: Text("No", style: TextStyle(fontSize: 20)),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(150, 50),
+                      primary: Colors.red,
+                      onPrimary: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        side: BorderSide(color: Colors.black, width: 2) 
+                      )             
+                    )
+                  ),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () {_goToSubmitInfoPage(context);},
+                    child: Text("Yes", style: TextStyle(fontSize: 20)),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(150, 50),
+                      primary: Colors.green,
+                      onPrimary: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        side: BorderSide(color: Colors.black, width: 2) 
+                      )             
+                    )
+                  )                    
+                ]
+              ))
+            ],
+          ))
+
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: "Press me!",
-        child: const Icon(Icons.add),
+    );
+  }
+}
+
+
+/*========================================================
+  Submit Info Page where User Submits their Info To Class 
+  ========================================================*/ 
+class SubmitInfoPage extends StatefulWidget {
+  SubmitInfoPage({Key? key, required this.classCode, required this.className}) : super(key: key);
+  final String classCode;
+  final String? className;
+  @override
+  _SubmitInfoPageState createState() => _SubmitInfoPageState();
+}
+
+
+class _SubmitInfoPageState extends State<SubmitInfoPage> {
+  TextEditingController firstNameController = TextEditingController(); 
+  TextEditingController lastNameController = TextEditingController(); 
+  TextEditingController preferedNameController = TextEditingController(); 
+  final List<bool> _selectedGenders = <bool>[true, false, false]; 
+  final List<Widget> genders = <Widget> [
+    Text("Male"),Text("Female"), Text("Non-Binary")
+  ];
+  late CameraController _cameraController;
+  XFile? _capturedPhoto;
+  late Student _student;
+  String _message = "";
+
+  @override
+  void initState() {super.initState();}
+
+  Future<void> _initializeCamera() async {
+    final cameras = await availableCameras();
+    _cameraController = CameraController(
+      cameras[0], 
+      ResolutionPreset.high,
+    );
+    await _cameraController.initialize();
+  }
+
+  @override
+  void dispose() {
+    _cameraController.dispose();
+    super.dispose();
+  }
+
+ 
+  void _genderButtons(int index) async{
+    setState(() {
+      for(int i = 0; i < _selectedGenders.length; i++){
+        _selectedGenders[i] = i == index;
+      }
+    });
+  }
+
+  void _takePhoto() async{
+    await _initializeCamera();
+    final XFile file = await _cameraController.takePicture();
+    _cameraController.dispose();
+    if (file != null){
+      setState(() {_capturedPhoto = file;});
+    } 
+  }
+
+  void _choosePhoto() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(
+      source: ImageSource.gallery
+    );
+    if (pickedFile != null) {
+      setState(() {_capturedPhoto = pickedFile;});
+    }
+  }
+
+  void _submitInfo() async{
+    if (firstNameController == null || lastNameController == null || _capturedPhoto == null){
+      setState(() {_message = "Missing Info";});
+    }
+    String firstName = firstNameController.text.trim();
+    String lastName = lastNameController.text.trim();
+    String? preferredName =
+      preferedNameController.text.isNotEmpty ? preferedNameController.text.trim() : null;
+    XFile? capturedPhoto = _capturedPhoto;
+    Gender gender = Gender.male;
+    for (int i = 0; i < _selectedGenders.length; i++) {
+      if (_selectedGenders[i]) {
+        gender = Gender.values[i];
+        break;
+      }
+    }   
+    _student = Student(
+      firstName: firstName,
+      lastName: lastName,
+      preferredName: preferredName,
+      photo: capturedPhoto!,
+      gender: gender,
+    );
+
+    bool submited = await CloudStorage().addStudent(widget.classCode, _student);
+    if (submited) {
+      setState(() {_message = "Successful Upload";});
+    } else {
+      setState(() {_message = "Error Uploading";});
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          /*_______Background Image_______*/
+          Positioned(
+            top: 0, left: 0, right: 0, bottom: 0,
+            child: Image.asset('images/background.jpg', fit: BoxFit.cover,),
+          ),
+          
+          Center(child: Column(children: [
+            /*_______Class Name & Underline_______*/
+            SizedBox(height: 20),
+            Text('${widget.className}', style: TextStyle(fontSize: 25, color: Colors.white)),
+            Container(width: 300, height: 2, color: Colors.white),
+          
+            /*_______Name TextFields_______*/
+            Container(
+              width: 300,
+              child: Column(children: [
+                SizedBox(height: 10),
+                TextField(
+                  controller: firstNameController, 
+                  cursorColor: Colors.black,
+                  style: TextStyle(color: Colors.black, fontSize: 15),
+                  decoration: InputDecoration(
+                    hintText: "Enter First Name",
+                  )
+                ),
+                SizedBox(height: 5),
+                TextField(
+                  controller: lastNameController, 
+                  cursorColor: Colors.black,
+                  style: TextStyle(color: Colors.black, fontSize: 15),
+                  decoration: InputDecoration(
+                    hintText: "Enter Last Name",
+                  )
+                ),
+                SizedBox(height: 5),
+                TextField(
+                  controller: preferedNameController, 
+                  cursorColor: Colors.black,
+                  style: TextStyle(color: Colors.black, fontSize: 15),
+                  decoration: InputDecoration(
+                    hintText: "Enter Preffered Name",
+                  )
+                ),
+              ])
+            ),
+
+            /*_______Gender Buttons_______*/
+            SizedBox(height: 10),
+            Text("Gender", style: TextStyle(fontSize: 18, color: Colors.white)),
+            SizedBox(height: 4),
+            ToggleButtons(
+              onPressed: (int index) {_genderButtons(index);},
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              selectedBorderColor: Colors.black,
+              selectedColor: Colors.black,
+              fillColor: Colors.white,
+              color: Colors.white,
+              constraints: const BoxConstraints(
+                minHeight: 40.0,
+                minWidth: 95.0,
+              ),
+              isSelected: _selectedGenders,
+              children: genders,
+            ),
+
+            /*____Upload Portrait Options____*/
+            SizedBox(height: 10),
+            Text("Portrait", style: TextStyle(fontSize: 18, color: Colors.white)),
+            SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _takePhoto,
+                  child: Text(" Take "),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(130, 50),
+                    primary: Colors.white,
+                    onPrimary: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0), 
+                      side: BorderSide(color: Colors.black, width: 2) 
+                    ),               
+                  ),
+                ),
+                SizedBox(width:4),
+                ElevatedButton(
+                  onPressed: _choosePhoto,
+                  child: Text("Choose"),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(130, 50),
+                    primary: Colors.white,
+                    onPrimary: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: BorderSide(color: Colors.black, width: 2)
+                    ),               
+                  ),
+                ),
+              ]
+            ),
+
+            /*____Display Portrait____*/
+            SizedBox(height: 5),
+            SizedBox(  
+              height: 200,
+              width: 200,
+              child: _capturedPhoto  != null
+                ? Image.network(_capturedPhoto!.path)
+                : Placeholder(
+                  fallbackHeight: 200,
+                  fallbackWidth: 200,
+                  child: Image.asset("images/emptyPicFrame.png"),
+                ),
+            ),
+            Text("$_message", style: TextStyle(fontSize: 15, color: Colors.white)),
+            ElevatedButton(
+              onPressed: _submitInfo,
+              child: Text("Submit", style: TextStyle(fontSize: 20)),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(150, 50),
+                primary: Colors.green,
+                onPrimary: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  side: BorderSide(color: Colors.black, width: 2) 
+                )             
+              )
+            )  
+            
+          
+          ]))
+          
+
+        ],
       ),
     );
   }
