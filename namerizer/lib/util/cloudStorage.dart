@@ -53,15 +53,8 @@ class CloudStorage {
   ///add a student to a class with a specified class code
   ///*return false if class doesn't exist*
   Future<bool> addStudent(String classCode, Student student) async {
-    while(!_init) {
-      await initializeDefault();
-    }
-    //I lost all hope. Nothing was working...
-    //But after 3 days of work and failures...
-    //At last, something worked... And I was so happy.
-    //And I'm too afraid to touch it until it breaks for a known and established reason...
-    //So I don't care if it's terrible code or not,
-    //  I just hope it works and I never have to touch it again...
+    while(!_init) {await initializeDefault();}
+
     final fireRef = FirebaseStorage.instance.ref();
     final picRef = fireRef.child(classCode).child("${Random().nextDouble()}.png");
     try {
@@ -122,6 +115,7 @@ class CloudStorage {
     }
     //Unhandled Exception: Bad state: cannot get a field on a DocumentSnapshotPlatform which does not exist
     DocumentSnapshot<Map<String,dynamic>> classData = await FirebaseFirestore.instance.collection("classes").doc(classCode).get();
+    if(!classData.exists) {return null;}
     return classData["class_name"];
   }
 
@@ -132,6 +126,7 @@ class CloudStorage {
       await initializeDefault();
     }
     DocumentSnapshot<Map<String,dynamic>> classData = await FirebaseFirestore.instance.collection("classes").doc(classCode).get();
+    if(!classData.exists) {return null;}
     return classData["prof_name"];
   }
 
