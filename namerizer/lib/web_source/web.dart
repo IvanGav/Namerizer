@@ -1,18 +1,10 @@
-import 'package:image_picker/image_picker.dart';
-import 'package:file_picker/file_picker.dart';
-import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import "package:firebase_core/firebase_core.dart";
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'dart:io';
-import 'package:cross_file/cross_file.dart';
-import 'dart:convert';
-import 'package:image_picker_web/image_picker_web.dart';
-
-
 
 import "../util/cloudStorage.dart";
 import "../firebase_options.dart";
@@ -55,19 +47,24 @@ class WebHome extends StatefulWidget {
  
 class _WebHomeState extends State<WebHome> {
   final classCodeController = TextEditingController(); 
+  bool _loading = false;
   String? error;
 
   void _goToVerifyPage() async{
     String classCode = classCodeController.text;
     if (classCode.isEmpty){setState((){error = "Please Enter A Code";}); return;}
+    setState((){_loading = true;});
 
+    /* gets the class & proff name from code */
     String? className = await CloudStorage().getClassName(classCode);
+    String? proffName = await CloudStorage().getClassProfessor(classCode);
     if (className == null){
-      setState((){error = "Class Not Found";}); 
+      setState((){error = "Class Not Found";});
+      setState(() {_loading = false;}); 
       return;
     }
-    String? proffName = await CloudStorage().getClassProfessor(classCode);
 
+    /* goes to next page */
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => VerifyPage(
@@ -77,6 +74,8 @@ class _WebHomeState extends State<WebHome> {
         ),
       ),
     );
+
+    setState(() {_loading = false;});
   }
 
   @override
@@ -114,10 +113,12 @@ class _WebHomeState extends State<WebHome> {
                 /*_______Submit Button_______*/
                 SizedBox(height: 180),
                 ElevatedButton(
-                  onPressed: _goToVerifyPage,
-                  child: Text("Submit", style: TextStyle(fontSize: 20)),
+                  onPressed: _loading ? null : _goToVerifyPage,
+                  child: _loading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text("Submit", style: TextStyle(fontSize: 22)),
                   style: ElevatedButton.styleFrom(
-                    minimumSize: Size(150, 50),
+                    minimumSize: Size(170, 60),
                     primary: Colors.green,
                     onPrimary: Colors.white,
                     shape: RoundedRectangleBorder(
@@ -126,6 +127,7 @@ class _WebHomeState extends State<WebHome> {
                     )             
                   )
                 )  
+                
               ]
             ))
           ]
@@ -174,7 +176,7 @@ class VerifyPage extends StatelessWidget {
               Text('Namerizer', style: TextStyle(fontSize: 30, color: Colors.white,)),
               Container(width: 300, height:2, color:Colors.white),
               /*______Prints Class Name & Proff Name_______*/
-              SizedBox(height: 130),
+              SizedBox(height: 120),
               Text("Is This Your Class?", style: TextStyle(fontSize: 20, color: Colors.white)),
               SizedBox(height: 10),
               Container(
@@ -188,19 +190,19 @@ class VerifyPage extends StatelessWidget {
                   children: [
                     SizedBox(height: 4),
                     Row(children: [
-                      Text(" Class: ", style: TextStyle(fontSize: 20)),
+                      Text("  Class: ", style: TextStyle(fontSize: 20)),
                       Text("$className", style: TextStyle(fontSize: 20))
                     ]),
                     SizedBox(height: 8),
                     Row(children: [
-                      Text(" Proff: ", style: TextStyle(fontSize: 20)),
+                      Text("  Proff: ", style: TextStyle(fontSize: 20)),
                       Text("$proffName", style: TextStyle(fontSize: 20))
                     ]),
                     SizedBox(height: 4),
                   ],
                 ),
               ),
-              SizedBox(height: 120),
+              SizedBox(height: 130),
               Center(child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -259,14 +261,13 @@ class _SubmitInfoPageState extends State<SubmitInfoPage> {
   TextEditingController firstNameController = TextEditingController(); 
   TextEditingController lastNameController = TextEditingController(); 
   TextEditingController preferedNameController = TextEditingController(); 
+  final List<Widget> genders = <Widget> [Text("Male"),Text("Female"),Text("Non-Binary")];
   final List<bool> _selectedGenders = <bool>[true, false, false]; 
-  final List<Widget> genders = <Widget> [
-    Text("Male"),Text("Female"), Text("Non-Binary")
-  ];
   late CameraController _cameraController;
   XFile? _capturedPhoto;
   late Student _student;
   String _message = "";
+  bool _loading = false;
 
   @override
   void initState() {super.initState();}
@@ -298,7 +299,7 @@ class _SubmitInfoPageState extends State<SubmitInfoPage> {
   void _takePhoto() async{
     await _initializeCamera();
     final XFile file = await _cameraController.takePicture();
-    _cameraController.dispose();
+    await _cameraController.dispose();
     if (file != null){
       setState(() {_capturedPhoto = file;});
     } 
@@ -315,15 +316,18 @@ class _SubmitInfoPageState extends State<SubmitInfoPage> {
   }
 
   void _submitInfo() async{
-    if (firstNameController == null || lastNameController == null || _capturedPhoto == null){
-      setState(() {_message = "Missing Info";});
-    }
+    setState(() {_loading = true;});
     String firstName = firstNameController.text.trim();
     String lastName = lastNameController.text.trim();
-    String? preferredName =
-      preferedNameController.text.isNotEmpty ? preferedNameController.text.trim() : null;
+    if (firstName.isEmpty || lastName.isEmpty || _capturedPhoto == null){
+      setState(() {_message = "Missing Info";});
+      setState(() {_loading = false;});
+      return;
+    }
+
+    String? preferredName = preferedNameController.text.trim();
     XFile? capturedPhoto = _capturedPhoto;
-    Gender gender = Gender.male;
+    late Gender gender;
     for (int i = 0; i < _selectedGenders.length; i++) {
       if (_selectedGenders[i]) {
         gender = Gender.values[i];
@@ -340,10 +344,15 @@ class _SubmitInfoPageState extends State<SubmitInfoPage> {
 
     bool submited = await CloudStorage().addStudent(widget.classCode, _student);
     if (submited) {
-      setState(() {_message = "Successful Upload";});
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ExitPage(className: widget.className),
+        )
+      );
     } else {
       setState(() {_message = "Error Uploading";});
     }
+    setState(() {_loading = false;});
   }
 
 
@@ -469,8 +478,10 @@ class _SubmitInfoPageState extends State<SubmitInfoPage> {
             ),
             Text("$_message", style: TextStyle(fontSize: 15, color: Colors.white)),
             ElevatedButton(
-              onPressed: _submitInfo,
-              child: Text("Submit", style: TextStyle(fontSize: 20)),
+              onPressed: _loading ? null : _submitInfo,
+              child: _loading
+                ? CircularProgressIndicator(color: Colors.white)
+                : Text("Submit", style: TextStyle(fontSize: 20)),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(150, 50),
                 primary: Colors.green,
@@ -481,13 +492,62 @@ class _SubmitInfoPageState extends State<SubmitInfoPage> {
                 )             
               )
             )  
-            
-          
+    
           ]))
           
-
         ],
       ),
+    );
+  }
+}
+
+class ExitPage extends StatelessWidget {
+  ExitPage({Key? key, required this.className}) : super(key: key);
+  final String? className;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          /*_______Background Image_______*/
+          Positioned(
+            top: 0, left: 0, right: 0, bottom: 0,
+            child: Image.asset('images/background.jpg', fit: BoxFit.cover,),
+          ),
+          Center(child: Column(children: [
+            SizedBox(height: 20),
+            Image.asset('images/logo.png'),
+            Text('Namerizer', style: TextStyle(fontSize: 30, color: Colors.white)),
+            Container(width: 300, height: 2, color: Colors.white),
+
+            SizedBox(height: 130),
+
+
+            Container(
+                height: 150, width: 350,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(width: 2, color: Colors.black),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(height: 22),
+                    Text("You Have Successfully", style: TextStyle(fontSize: 20, color: Colors.black)),
+                    Text("Submited Your Information To", style: TextStyle(fontSize: 20, color: Colors.black)),
+                    SizedBox(height: 4),
+                    Container(width: 300, height: 2, color: Colors.black),
+                    SizedBox(height: 10),
+                    Text("$className", style: TextStyle(fontSize: 20, color: Colors.black)),
+                    SizedBox(height: 4),
+                  ],
+                ),
+              ),
+
+          ]))
+        ]
+      )
     );
   }
 }
