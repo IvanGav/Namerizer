@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:namerizer/android_source/games/flashCardGame.dart";
+import "package:namerizer/android_source/games/matchPhotoGame.dart";
 import "package:namerizer/android_source/studentView.dart";
 
 import "../util/student.dart";
@@ -71,6 +72,13 @@ class _ClassHomeState extends State<ClassHome> {
       ),
     );
   }
+  void _playPhotoMatch(BuildContext context){
+      Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MatchPhotoGame(title: _title, students: _students),
+      ),
+    );
+  }
 
   //_____________build_______________
   @override
@@ -103,7 +111,7 @@ class _ClassHomeState extends State<ClassHome> {
         ),
         FloatingActionButton(
           heroTag: "match_photo_game",
-          onPressed: () { print("--The game is not yet implemented"); },
+          onPressed: _studentsInitialized ? () => _playPhotoMatch(context) : null,
           tooltip: "Match Photo",
           child: const Text("Match Photo"),
         ),
