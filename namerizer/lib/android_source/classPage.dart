@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:namerizer/android_source/codePage.dart";
 import "package:namerizer/android_source/games/flashCardGame.dart";
 import "package:namerizer/android_source/studentView.dart";
 
@@ -72,6 +73,14 @@ class _ClassHomeState extends State<ClassHome> {
     );
   }
 
+  void _openCodePage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => CodePage(code: widget.code, title: _title),
+      ),
+    );
+  }
+
   //_____________build_______________
   @override
   Widget build(BuildContext context) {
@@ -84,6 +93,11 @@ class _ClassHomeState extends State<ClassHome> {
             onPressed: () { print("--Not yet implemented"); },
             tooltip: "Set Up",
             icon: const Icon(Icons.settings),
+          ),
+          IconButton(
+            onPressed: () => _openCodePage(context),
+            tooltip: "Go to Code Page",
+            icon: const Text("Code"),
           ),
         ],
       ),
