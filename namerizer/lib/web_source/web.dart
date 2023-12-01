@@ -1,4 +1,4 @@
-import "package:google_fonts/google_fonts.dart";
+// import "package:google_fonts/google_fonts.dart";
 import "package:image_picker/image_picker.dart";
 import "package:flutter/material.dart";
 import "package:camera/camera.dart";
@@ -12,6 +12,7 @@ final bgImg = Image.network("https://images.unsplash.com/photo-1483232539664-d89
 // Image.asset("images/background.jpg", fit: BoxFit.cover);
 final emptyImg = Image.network("https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/118947646/original/9fb85fe56953295c5592270439d44b477c742ca5/create-a-pixel-art-charakter-for-you.png");
 // Image.asset("images/emptyPicFrame.png");
+final TextTheme? textTheme = null;// GoogleFonts.calistogaTextTheme();
 
 class WebApp extends StatelessWidget {
   const WebApp({super.key});
@@ -19,7 +20,7 @@ class WebApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        textTheme: GoogleFonts.calistogaTextTheme(), 
+        textTheme: textTheme,
         inputDecorationTheme: InputDecorationTheme(
           filled: true, fillColor: Colors.white,
           errorStyle: const TextStyle(color: Colors.red),
