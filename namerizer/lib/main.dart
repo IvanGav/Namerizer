@@ -13,3 +13,5 @@ void main() {
     runApp(const AndroidApp());
   }
 }
+
+//flutter build web --base-href="/Namerizer/"
