@@ -20,10 +20,10 @@ class _MatchPhotoGameState extends State<MatchPhotoGame> {
     final List<Student> _notFemale = [];
     final List<Student> _notMale = [];
     List<String> _buttonNames = [];
+    List<bool> _buttonState = List.filled(4, false);
     late Student _currStudent;
     late int _notFemaleSize;
     late int _notMaleSize;
-    
 
     @override
     void initState() {
@@ -31,6 +31,9 @@ class _MatchPhotoGameState extends State<MatchPhotoGame> {
         _currStudent = _selectStudent();
         _buildGenderLists();
         _buildButtonNames();
+
+                print("***************************************************************************************");
+
     }
 
     /* populates notMale & notFemale list (non-bi is put into both)*/
@@ -84,32 +87,47 @@ class _MatchPhotoGameState extends State<MatchPhotoGame> {
         if (_currStudent.gender == Gender.male){
             _notFemale.shuffle();
             for (int i = 0; i < range; i++) {
-                if (_notFemale[i].name == _currStudent.name) {
-                    range++;    // increases range of search to skip same name
-                }
-                else if (i <_notFemaleSize){
-                    _buttonNames.add(_notFemale[i].name);
+                if (i < _notFemaleSize){
+                    if (_notFemale[i].name == _currStudent.name) {
+                        range++;    // increases range of search to skip same name 
+                    }
+                    else {_buttonNames.add(_notFemale[i].name);}
                 }
             }         
         } else {
             _notMale.shuffle();
             for (int i = 0; i < range; i++) {
-                if (_notMale[i].name == _currStudent.name) {
-                    range++;    // increases range of search to skip same name
-                }
-                else if (i <_notMaleSize){
-                    _buttonNames.add(_notMale[i].name);
+                if (i < _notMaleSize){
+                    if (_notMale[i].name == _currStudent.name) {
+                        range++;    // increases range of search to skip same name 
+                    }
+                    else {_buttonNames.add(_notMale[i].name);}
                 }
             }            
         }
         _buttonNames.shuffle();
     }
 
+    String getButtonName(int i) {
+        if (_buttonNames.length > i){return _buttonNames[i];}
+        else {return "";}
+    }
+
+    Color getButtonColor(int i) {
+        if (_buttonState[i] && _buttonNames.length > i) {
+            if (_buttonNames[i] == _currStudent.name) {return Colors.green;}
+            else {return Colors.red;}
+        } 
+        else {return Colors.white;}
+    }
+
+
     /* sets states for next play */
     void _nextPlay(){
         setState(() {      
-            _currStudent = _selectStudent();
+            _currStudent = _selectStudent();    
             _buildButtonNames();
+            _buttonState = List.filled(4, false);               
         });
     }
 
@@ -162,29 +180,26 @@ class _MatchPhotoGameState extends State<MatchPhotoGame> {
                 SizedBox(height: 60),
 
                 /*______4 button of student's name______*/
-                ElevatedButton(
-                onPressed: () {
-                    bool isCorrect = _buttonNames.length > 0 && _buttonNames[0] == _currStudent.name;
-                    print("Selected: ${_buttonNames.length > 0 ? _buttonNames[0] : "Not enough names"}, Correct: $isCorrect");
-                },
-                child: Text(_buttonNames.length > 0 ? _buttonNames[0] : "Not enough names", style: TextStyle(fontSize: 20)),
-                style: ElevatedButton.styleFrom(
-                    minimumSize: Size(340, 50),
-                    primary: _buttonNames.length > 0 && _buttonNames[0] == _currStudent.name ? Colors.green : Colors.red,
-                    onPrimary: Colors.black,
-                    shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    side: BorderSide(color: Colors.black, width: 2) 
-                    )             
-                )
-                ),
+                    ElevatedButton(
+                    onPressed: () {setState(() {_buttonState[0] = true;});},
+                    child: Text(getButtonName(0),style: TextStyle(fontSize: 20)),
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: Size(340, 50),
+                        primary: getButtonColor(0),
+                        onPrimary: Colors.black,
+                        shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        side: BorderSide(color: Colors.black, width: 2),
+                        ),
+                    ),
+                    ),
                 SizedBox(height: 15),
                 ElevatedButton(
-                    onPressed: () => print("Selected: ${_buttonNames.length > 1 ? _buttonNames[1] : "Not enough names"}"),
-                    child: Text(_buttonNames.length > 1 ? _buttonNames[1] : "Not enough names", style: TextStyle(fontSize: 20)),
+                    onPressed: () {setState(() {_buttonState[1] = true;});},
+                    child: Text(getButtonName(1),style: TextStyle(fontSize: 20)),
                     style: ElevatedButton.styleFrom(
                     minimumSize: Size(340, 50),
-                    primary: Colors.white,
+                    primary: getButtonColor(1),
                     onPrimary: Colors.black,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -194,11 +209,11 @@ class _MatchPhotoGameState extends State<MatchPhotoGame> {
                 ),
                 SizedBox(height: 15),
                 ElevatedButton(
-                    onPressed: () => print("Selected: ${_buttonNames.length > 2 ? _buttonNames[2] : "Not enough names"}"),
-                    child: Text(_buttonNames.length > 2 ? _buttonNames[2] : "Not enough names", style: TextStyle(fontSize: 20)),
+                    onPressed: () {setState(() {_buttonState[2] = true;});},
+                    child: Text(getButtonName(2),style: TextStyle(fontSize: 20)),
                     style: ElevatedButton.styleFrom(
                     minimumSize: Size(340, 50),
-                    primary: Colors.white,
+                    primary: getButtonColor(2),
                     onPrimary: Colors.black,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -208,11 +223,11 @@ class _MatchPhotoGameState extends State<MatchPhotoGame> {
                 ),
                 SizedBox(height: 15),
                 ElevatedButton(
-                    onPressed: () => print("Selected: ${_buttonNames.length > 3 ? _buttonNames[3] : "Not enough names"}"),
-                    child: Text(_buttonNames.length > 1 ? _buttonNames[3] : "Not enough names", style: TextStyle(fontSize: 20)),
+                    onPressed: () {setState(() {_buttonState[3] = true;});},
+                    child: Text(getButtonName(3),style: TextStyle(fontSize: 20)),
                     style: ElevatedButton.styleFrom(
                     minimumSize: Size(340, 50),
-                    primary: Colors.white,
+                    primary: getButtonColor(3),
                     onPrimary: Colors.black,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
