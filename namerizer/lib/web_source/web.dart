@@ -411,6 +411,7 @@ class _SubmitInfoPageState extends State<SubmitInfoPage> {
             ),
 
             /*_______Gender Buttons_______*/
+            // citation: https://api.flutter.dev/flutter/material/ToggleButtons-class.html
             const SizedBox(height: 10),
             const Text("Gender", style: TextStyle(fontSize: 18, color: Colors.white)),
             const SizedBox(height: 4),
