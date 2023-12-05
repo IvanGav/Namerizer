@@ -18,7 +18,13 @@ class WebApp extends StatelessWidget {
   const WebApp({super.key});
   @override
   Widget build(BuildContext context) {
+    /* prevents from website going horizantal */
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
+      themeMode: ThemeMode.light,
       theme: ThemeData(
         textTheme: textTheme,
         inputDecorationTheme: InputDecorationTheme(
