@@ -6,13 +6,13 @@ import "package:camera/camera.dart";
 import "../util/cloudStorage.dart";
 import "../util/student.dart";
 
-final iconImg = Image.network("https://pbs.twimg.com/profile_images/1294200194226171904/qOiiCE6c_400x400.png", height: 200);
-// Image.asset("images/logo.png");
-final bgImg = Image.network("https://images.unsplash.com/photo-1483232539664-d89822fb5d3e?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", fit: BoxFit.cover);
-// Image.asset("images/background.jpg", fit: BoxFit.cover);
-final emptyImg = Image.network("https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/118947646/original/9fb85fe56953295c5592270439d44b477c742ca5/create-a-pixel-art-charakter-for-you.png");
-// Image.asset("images/emptyPicFrame.png");
-final TextTheme? textTheme = null;// GoogleFonts.calistogaTextTheme();
+final iconImg = Image.asset("images/logo.png");
+//Image.network("https://pbs.twimg.com/profile_images/1294200194226171904/qOiiCE6c_400x400.png", height: 200); 
+final bgImg = Image.asset("images/background.jpg", fit: BoxFit.cover);
+//Image.network("https://images.unsplash.com/photo-1483232539664-d89822fb5d3e?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", fit: BoxFit.cover);
+final emptyImg = Image.asset("images/emptyPicFrame.png");
+//Image.network("https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/118947646/original/9fb85fe56953295c5592270439d44b477c742ca5/create-a-pixel-art-charakter-for-you.png");
+final TextTheme? textTheme = GoogleFonts.calistogaTextTheme(); //null; 
 
 class WebApp extends StatelessWidget {
   const WebApp({super.key});
