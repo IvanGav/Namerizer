@@ -31,9 +31,6 @@ class _MatchPhotoGameState extends State<MatchPhotoGame> {
         _currStudent = _selectStudent();
         _buildGenderLists();
         _buildButtonNames();
-
-                print("***************************************************************************************");
-
     }
 
     /* populates notMale & notFemale list (non-bi is put into both)*/
@@ -161,7 +158,7 @@ class _MatchPhotoGameState extends State<MatchPhotoGame> {
                     fontFamily: GoogleFonts.calistoga().fontFamily 
                     )
                 ),
-                Text("Name ...", 
+                Text("Name?", 
                     style: TextStyle(
                     fontSize: 20, color: Colors.white,
                     fontFamily: GoogleFonts.calistoga().fontFamily 

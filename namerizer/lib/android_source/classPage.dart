@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:namerizer/android_source/codePage.dart";
 import "package:namerizer/android_source/games/flashCardGame.dart";
 import "package:namerizer/android_source/games/matchPhotoGame.dart";
+import "package:namerizer/android_source/games/matchNameGame.dart";
 import "package:namerizer/android_source/studentView.dart";
 
 import "../util/student.dart";
@@ -80,6 +81,13 @@ class _ClassHomeState extends State<ClassHome> {
       ),
     );
   }
+    void _playNameMatch(BuildContext context){
+      Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MatchNameGame(title: _title, students: _students),
+      ),
+    );
+  }
 
   void _openCodePage(BuildContext context) {
     Navigator.of(context).push(
@@ -119,7 +127,7 @@ class _ClassHomeState extends State<ClassHome> {
         ),
         FloatingActionButton(
           heroTag: "match_name_game",
-          onPressed: () { print("--The game is not yet implemented"); },
+          onPressed: _studentsInitialized ? () => _playNameMatch(context) : null,
           tooltip: "Match Name",
           child: const Text("Match Name"),
         ),
