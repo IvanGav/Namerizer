@@ -40,7 +40,6 @@ class _ClassHomeState extends State<ClassHome> {
       _studentsInitialized = false;
     });
     _students = (await widget.cloud.getStudents(widget.code))!; //should be fine
-    print("--${_students.length}");
     setState(() {
       _studentsInitialized = true;
     });
@@ -59,10 +58,71 @@ class _ClassHomeState extends State<ClassHome> {
     return RefreshIndicator(
       onRefresh: _initStudents,
       child: ListView.builder(
-        itemBuilder: (context, index) => StudentView(student: _students[index]),
+        itemBuilder: (context, index) => StudentView(student: _students[index], deleteFun: _promptDeleteStudent),
         itemCount: _students.length,
       ),
     );
+  }
+
+  //_____________other functions______________
+  void _promptDeleteStudent(BuildContext context, Student student) {
+    if(student.id == null) {
+      _snack(context,"Student doesn't have an ID, try refreshing.");
+      return;
+    }
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Remove a student?"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text("A student with this name will be permanently deleted:", style: TextStyle(color: Colors.red)),
+              const SizedBox(height: 20),
+              Text(student.fullName),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+                onPressed: () {
+                  _deleteStudent(student.id!).then((success) {
+                    if(!success) {
+                      _snack(context,"Couldn't delete a student, try refreshing.");
+                    }
+                    return success;
+                  });
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Delete", style: TextStyle(color: Colors.red))
+            ),
+          ],
+        )
+    );
+  }
+
+  Future<bool> _deleteStudent(String studentID) async {
+    setState(() {
+      _studentsInitialized = false;
+    });
+    bool? success = await widget.cloud.deleteStudentById(widget.code, studentID);
+    setState(() {
+      if(success) {
+        _students.removeWhere((element) => element.id == studentID);
+      }
+      _studentsInitialized = true;
+    });
+    return success;
+  }
+
+  void _snack(BuildContext context, String message) {
+    var snackBar = SnackBar(
+      content: Text(message),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   //_____________play games_______________
@@ -97,11 +157,6 @@ class _ClassHomeState extends State<ClassHome> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(_title),
         actions: [ //tailing
-          IconButton(
-            onPressed: () { print("--Not yet implemented"); },
-            tooltip: "Set Up",
-            icon: const Icon(Icons.settings),
-          ),
           IconButton(
             onPressed: () => _openCodePage(context),
             tooltip: "Go to Code Page",
