@@ -1,6 +1,7 @@
 import "dart:math";
-
 import "package:flutter/material.dart";
+import 'package:google_fonts/google_fonts.dart';
+
 
 import "../../util/student.dart";
 import "flashCard.dart";
@@ -102,20 +103,53 @@ class _FlashCardGameState extends State<FlashCardGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        backgroundColor: Colors.blueGrey.shade100,
+        title:  Text("Flash Card Game", 
+                style: TextStyle(fontFamily: GoogleFonts.calistoga().fontFamily)
+            ),
       ),
-      body: Center(
-        child: _animateCard(),
-      ),
-      persistentFooterButtons: [
-        FloatingActionButton(
-          onPressed: () => _nextCard(),
-          tooltip: "Next Card",
-          child: const Icon(Icons.arrow_forward),
+      body: Container(
+        /*_________backround image_________*/
+        decoration: BoxDecoration(
+            image: DecorationImage(
+            image: AssetImage('images/background.jpg'),
+            fit: BoxFit.cover,
+            ),
         ),
-      ],
-      persistentFooterAlignment: AlignmentDirectional.center,
+        /*_________main structure_________*/
+        child: Center(child: Column( children: [
+
+          /*_______description_______*/
+          SizedBox(height: 50),
+          Text("Click The Card", 
+            style: TextStyle(
+              fontSize: 20, color: Colors.white,
+              fontFamily: GoogleFonts.calistoga().fontFamily 
+              )
+          ),
+          Text("To Reveal The Name", 
+            style: TextStyle(
+              fontSize: 20, color: Colors.white,
+              fontFamily: GoogleFonts.calistoga().fontFamily 
+            )
+          ),
+          SizedBox(height: 10),
+          Container(width: 300, height: 2, color: Colors.white),
+
+          /*_______flash card_______*/
+          SizedBox(height: 100),
+          _animateCard(),
+          SizedBox(height: 100),
+
+          /*_______next card button_______*/
+          FloatingActionButton(
+            onPressed: () => _nextCard(),
+            tooltip: "Next Card",
+            backgroundColor: Colors.blueGrey.shade100,
+            child: const Icon(Icons.arrow_forward),
+          ),
+        ]))
+      ),
     );
   }
 }
