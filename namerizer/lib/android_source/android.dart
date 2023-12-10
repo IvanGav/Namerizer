@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 import "home.dart";
 import "login.dart";
@@ -16,7 +18,12 @@ class AndroidApp extends StatelessWidget {
     return MaterialApp(
       title: "Android",
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        textTheme: GoogleFonts.calistogaTextTheme(),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.green, 
+          primary: Colors.black,
+        ),
+        primaryColor: Colors.white,
         useMaterial3: true,
       ),
       home: const LoginPage(),
