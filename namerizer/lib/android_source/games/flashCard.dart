@@ -1,6 +1,8 @@
 import "dart:math";
 
 import "package:flutter/material.dart";
+import 'package:google_fonts/google_fonts.dart';
+
 
 import "../../util/student.dart";
 
@@ -98,7 +100,10 @@ class _FlashCardState extends State<FlashCard> {
         width: 200,
         height: 200,
         child: Center(
-          child: Text(widget.student.name),
+          child: Text(widget.student.name, style: TextStyle(
+                      fontSize: 20, color: Colors.black,
+                      fontFamily: GoogleFonts.calistoga().fontFamily 
+                      )),
         ),
       ),
     );
