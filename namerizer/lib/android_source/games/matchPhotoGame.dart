@@ -133,12 +133,8 @@ class _MatchPhotoGameState extends State<MatchPhotoGame> {
 
     return Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.blueGrey.shade100,
-            title:  Text("Match Photo Game", 
-                    style: TextStyle(
-                        fontFamily: GoogleFonts.calistoga().fontFamily 
-                    )
-                ),
+            backgroundColor: Colors.grey.shade50,
+            title:  Text("Match Photo Game"),
         ),
         body: Container(
             /*_________backround image_________*/
@@ -153,16 +149,10 @@ class _MatchPhotoGameState extends State<MatchPhotoGame> {
                 /*_______Description_______*/
                 SizedBox(height: 30),
                 Text("What is This Student's", 
-                    style: TextStyle(
-                    fontSize: 20, color: Colors.white,
-                    fontFamily: GoogleFonts.calistoga().fontFamily 
-                    )
+                    style: TextStyle(fontSize: 20, color: Colors.white,)
                 ),
                 Text("Name?", 
-                    style: TextStyle(
-                    fontSize: 20, color: Colors.white,
-                    fontFamily: GoogleFonts.calistoga().fontFamily 
-                    )
+                    style: TextStyle(fontSize: 20, color: Colors.white,)
                 ),
                 SizedBox(height: 10),
 
@@ -238,7 +228,7 @@ class _MatchPhotoGameState extends State<MatchPhotoGame> {
                 FloatingActionButton(
                     onPressed: _nextPlay,
                     tooltip: "Next Play",
-                    backgroundColor: Colors.blueGrey.shade100,
+                    backgroundColor: Colors.grey.shade50,
                     child: const Icon(Icons.arrow_forward),
                 ),
 

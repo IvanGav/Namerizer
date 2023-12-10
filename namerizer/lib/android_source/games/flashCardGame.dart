@@ -1,6 +1,5 @@
 import "dart:math";
 import "package:flutter/material.dart";
-import 'package:google_fonts/google_fonts.dart';
 
 
 import "../../util/student.dart";
@@ -103,10 +102,8 @@ class _FlashCardGameState extends State<FlashCardGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey.shade100,
-        title:  Text("Flash Card Game", 
-                style: TextStyle(fontFamily: GoogleFonts.calistoga().fontFamily)
-            ),
+        backgroundColor: Colors.grey.shade50,
+        title:  Text("Flash Card Game"),
       ),
       body: Container(
         /*_________backround image_________*/
@@ -122,16 +119,10 @@ class _FlashCardGameState extends State<FlashCardGame> {
           /*_______description_______*/
           SizedBox(height: 50),
           Text("Click The Card", 
-            style: TextStyle(
-              fontSize: 20, color: Colors.white,
-              fontFamily: GoogleFonts.calistoga().fontFamily 
-              )
+            style: TextStyle(fontSize: 20, color: Colors.white)
           ),
           Text("To Reveal The Name", 
-            style: TextStyle(
-              fontSize: 20, color: Colors.white,
-              fontFamily: GoogleFonts.calistoga().fontFamily 
-            )
+            style: TextStyle(fontSize: 20, color: Colors.white)
           ),
           SizedBox(height: 10),
           Container(width: 300, height: 2, color: Colors.white),
@@ -145,7 +136,7 @@ class _FlashCardGameState extends State<FlashCardGame> {
           FloatingActionButton(
             onPressed: () => _nextCard(),
             tooltip: "Next Card",
-            backgroundColor: Colors.blueGrey.shade100,
+            backgroundColor: Colors.grey.shade50,
             child: const Icon(Icons.arrow_forward),
           ),
         ]))

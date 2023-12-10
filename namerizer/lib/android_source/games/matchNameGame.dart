@@ -128,10 +128,8 @@ class _MatchNameGameState extends State<MatchNameGame> {
 
     return Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.blueGrey.shade100,
-            title:  Text("Match Name Game", 
-                    style: TextStyle(fontFamily: GoogleFonts.calistoga().fontFamily)
-                ),
+            backgroundColor: Colors.grey.shade50,
+            title:  Text("Match Name Game"),
         ),
         body: Container(
             /*_________backround image_________*/
@@ -146,16 +144,10 @@ class _MatchNameGameState extends State<MatchNameGame> {
                 /*_______Description_______*/
                 SizedBox(height: 40),
                 Text("How does this Student", 
-                    style: TextStyle(
-                    fontSize: 20, color: Colors.white,
-                    fontFamily: GoogleFonts.calistoga().fontFamily 
-                    )
+                    style: TextStyle(fontSize: 20, color: Colors.white,)
                 ),
                 Text("Look Like?", 
-                    style: TextStyle(
-                    fontSize: 20, color: Colors.white,
-                    fontFamily: GoogleFonts.calistoga().fontFamily 
-                    )
+                    style: TextStyle(fontSize: 20, color: Colors.white,)
                 ),
                 SizedBox(height: 40),
 
@@ -169,10 +161,8 @@ class _MatchNameGameState extends State<MatchNameGame> {
                     ),
                     child: Center(
                         child: Text( _currStudent.name, style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                            fontFamily: GoogleFonts.calistoga().fontFamily,
-                        ),),
+                            fontSize: 20, color: Colors.black,
+                        )),
                     ),
                 ),
                 SizedBox(height: 90),
@@ -269,7 +259,7 @@ class _MatchNameGameState extends State<MatchNameGame> {
                 FloatingActionButton(
                     onPressed: _nextPlay,
                     tooltip: "Next Play",
-                    backgroundColor: Colors.blueGrey.shade100,
+                    backgroundColor: Colors.grey.shade50,
                     child: const Icon(Icons.arrow_forward),
                 ),
 

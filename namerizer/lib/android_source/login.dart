@@ -368,7 +368,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey.shade100,
+        backgroundColor: Colors.grey.shade50,
         title: Text("Login or Register"),
         leading: IconButton(
           onPressed: () => SystemChannels.platform.invokeMethod("SystemNavigator.pop"),
