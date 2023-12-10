@@ -102,8 +102,18 @@ class _ClassHomeState extends State<ClassHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(_title),
+        /*_______backround color_______*/ 
+        flexibleSpace: Container( 
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/background.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        /*_______title & buttons_______*/
+        title: Text(_title, style: TextStyle(color: Colors.white)),
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [ //tailing
           IconButton(
             onPressed: () { print("--Not yet implemented"); },
@@ -113,31 +123,69 @@ class _ClassHomeState extends State<ClassHome> {
           IconButton(
             onPressed: () => _openCodePage(context),
             tooltip: "Go to Code Page",
-            icon: const Text("Code"),
+            icon: const Text("Code", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
-      body: _getStudentList(),
-      persistentFooterButtons: [
-        FloatingActionButton(
-          heroTag: "flash_game",
-          onPressed: _studentsInitialized ? () => _playFlash(context) : null,
-          tooltip: "Flash Cards",
-          child: const Text("Flash"),
+      /*_______students_______*/
+      body: Container(
+        color: Colors.grey.shade50,       // backround color
+        child: _getStudentList(),         // lists of students
+      ),  
+      /*_______footer_______*/
+      bottomNavigationBar: Container( height: 100,
+        /*_______backround image_______*/
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background.jpg'),
+            fit: BoxFit.cover,
+          ),
         ),
-        FloatingActionButton(
-          heroTag: "match_name_game",
-          onPressed: _studentsInitialized ? () => _playNameMatch(context) : null,
-          tooltip: "Match Name",
-          child: const Text("Match Name"),
+        /*_______Buttons for clases_______*/
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _studentsInitialized ? () => _playFlash(context) : null,
+              child: const Text("Flash\nCards"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(100, 70),
+                primary: Colors.white, onPrimary: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: BorderSide(color: Colors.black, width: 2) 
+                )             
+              )
+            ),
+            SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: _studentsInitialized ? () => _playNameMatch(context) : null,
+              child: const Text("Match\nName"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(100, 70),
+                primary: Colors.white, onPrimary: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: BorderSide(color: Colors.black, width: 2) 
+                )             
+              )
+            ),
+            SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: _studentsInitialized ? () => _playPhotoMatch(context) : null,
+              child: const Text("Match\nPhoto"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(100, 70),
+                primary: Colors.white, onPrimary: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: BorderSide(color: Colors.black, width: 2) 
+                )             
+              )
+            ),
+          ],
         ),
-        FloatingActionButton(
-          heroTag: "match_photo_game",
-          onPressed: _studentsInitialized ? () => _playPhotoMatch(context) : null,
-          tooltip: "Match Photo",
-          child: const Text("Match Photo"),
-        ),
-      ],
+      ),
       persistentFooterAlignment: AlignmentDirectional.center,
     );
   }
