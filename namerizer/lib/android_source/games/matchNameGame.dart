@@ -105,18 +105,13 @@ class _MatchNameGameState extends State<MatchNameGame> {
         _buttonStudents.shuffle();
     }
 
-    /*String getButtonName(int i) {
-        if (_buttonNames.length > i){return _buttonNames[i];}
-        else {return "";}
-    }
-
-    Color getButtonColor(int i) {
-        if (_buttonState[i] && _buttonNames.length > i) {
-            if (_buttonNames[i] == _currStudent.name) {return Colors.green;}
+    Color getBorderColor(int i) {
+        if (_buttonState[i] && _buttonStudents.length > i) {
+            if (_buttonStudents[i].name == _currStudent.name) {return Colors.green;}
             else {return Colors.red;}
         } 
-        else {return Colors.white;}
-    }*/
+        else {return Colors.black;}
+    }
 
 
     /* sets states for next play */
@@ -151,7 +146,7 @@ class _MatchNameGameState extends State<MatchNameGame> {
             /*_________main structure_________*/
             child: Center(child: Column( children: [
                 /*_______Description_______*/
-                SizedBox(height: 30),
+                SizedBox(height: 40),
                 Text("How does this Student", 
                     style: TextStyle(
                     fontSize: 20, color: Colors.white,
@@ -164,10 +159,9 @@ class _MatchNameGameState extends State<MatchNameGame> {
                     fontFamily: GoogleFonts.calistoga().fontFamily 
                     )
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 40),
 
                 /*______image of random student______*/
-                //Text(_currStudent.name),
                 Container(
                     height: 40, width: 300,
                     decoration: BoxDecoration(
@@ -183,25 +177,95 @@ class _MatchNameGameState extends State<MatchNameGame> {
                         ),),
                     ),
                 ),
+                SizedBox(height: 90),
 
-                ElevatedButton(
-                    onPressed: () {print("button pressed");},
-                    child: Ink.image(
-                        image: Image.network(getStu)
-                    )
+                /*______4 buttons with students portraits______*/
+                Row( 
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                        ElevatedButton(
+                            onPressed: () {setState(() {_buttonState[0] = true;});},
+                            child: SizedBox(
+                                width: 130, height: 140,
+                                child: _buttonStudents.length > 0 ? 
+                                    Image(
+                                        image: Image.network(_buttonStudents[0].photo.path).image,
+                                    )
+                                    : null,        
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    side: BorderSide(color: getBorderColor(0), width: 4), 
+                                ),
+                            ),
+                        ),
+                        SizedBox(width: 10),
+                        ElevatedButton(
+                            onPressed: () {setState(() {_buttonState[1] = true;});},
+                            child: SizedBox(
+                                width: 130, height: 140,
+                                child: _buttonStudents.length > 1 ? 
+                                    Image(
+                                        image: Image.network(_buttonStudents[1].photo.path).image,
+                                    )
+                                    : null,                
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    side: BorderSide(color: getBorderColor(1), width: 4), 
+                                ),
+                            ),
+                        ),
+                    ]
                 ),
-
-                /*SizedBox(
-                    width: 200, height: 200,
-                    child: Image(
-                    image: Image.network(_currStudent.photo.path).image, 
-                    width: 100,height: 100,
-                    ),
-                ),*/
-                SizedBox(height: 60),
-
-                /*______4 button of student's name______*/
-
+                SizedBox(height: 15),
+                Row( 
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                        ElevatedButton(
+                            onPressed: () {setState(() {_buttonState[2] = true;});},
+                            child: SizedBox(
+                                width: 130, height: 140,
+                                child: _buttonStudents.length > 2 ? 
+                                    Image(
+                                        image: Image.network(_buttonStudents[2].photo.path).image,
+                                    )
+                                    : null,               
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    side: BorderSide(color: getBorderColor(2), width: 4), 
+                                ),
+                            ),
+                        ),
+                        SizedBox(width: 10),
+                        ElevatedButton(
+                            onPressed: () {setState(() {_buttonState[3] = true;});},
+                            child: SizedBox(
+                                width: 130, height: 140,
+                                child: _buttonStudents.length > 3 ? 
+                                    Image(
+                                        image: Image.network(_buttonStudents[3].photo.path).image,
+                                    )
+                                    : null,               
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    side: BorderSide(color: getBorderColor(3), width: 4), 
+                                ),
+                            ),
+                        ),
+                    ]
+                ),
+                SizedBox(height: 50),
 
                 /*_____button to switch to next student_____*/
                 FloatingActionButton(
