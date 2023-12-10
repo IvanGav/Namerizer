@@ -348,8 +348,6 @@ class _HomeState extends State<Home> {
             ],
         ),
       ),
-      //persistentFooterAlignment: AlignmentDirectional.center,
-      //floatingActionButton: _loading ? const CircularProgressIndicator() : null,
     );
   }
 }
