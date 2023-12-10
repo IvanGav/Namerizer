@@ -369,9 +369,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueGrey.shade100,
-        title: Text("Login or Register", 
-                style: TextStyle(fontFamily: GoogleFonts.calistoga().fontFamily)
-        ),
+        title: Text("Login or Register"),
         leading: IconButton(
           onPressed: () => SystemChannels.platform.invokeMethod("SystemNavigator.pop"),
           tooltip: "Quit to Home",
