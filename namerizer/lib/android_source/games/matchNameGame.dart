@@ -130,9 +130,7 @@ class _MatchNameGameState extends State<MatchNameGame> {
         appBar: AppBar(
             backgroundColor: Colors.blueGrey.shade100,
             title:  Text("Match Name Game", 
-                    style: TextStyle(
-                        fontFamily: GoogleFonts.calistoga().fontFamily 
-                    )
+                    style: TextStyle(fontFamily: GoogleFonts.calistoga().fontFamily)
                 ),
         ),
         body: Container(
