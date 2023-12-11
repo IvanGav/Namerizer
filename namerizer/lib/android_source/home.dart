@@ -102,6 +102,7 @@ class _HomeState extends State<Home> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Enter a Class Name:"),
+        backgroundColor: Colors.white,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -259,45 +260,94 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Choose or create a class"),
+        /*_______backround color_______*/ 
+        flexibleSpace: Container( 
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/background.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        /*_______title & buttons_______*/
+        title: const Text("Classrooms", style: TextStyle(color: Colors.white)),
         leading: IconButton(
           onPressed: () => SystemChannels.platform.invokeMethod("SystemNavigator.pop"),
           tooltip: "Quit to Home",
-          icon: const Icon(Icons.home),
+          icon: const Icon(Icons.home, color: Colors.white),
         ),
         actions: [ //tailing
           IconButton(
             onPressed: _logout, //maybe grey out the button while trying to log out?
             tooltip: "Logout",
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.white),
           ),
         ],
       ),
-      body: _getClassList(context),
-      persistentFooterButtons: _deleting ? [ //deleting (cancel button)
-        FloatingActionButton(
-          heroTag: "cancel_remove",
-          onPressed: _loading ? null : () => setState(() => _deleting = false),
-          tooltip: "Cancel",
-          child: const Icon(Icons.cancel),
+      /*_______classrooms_______*/
+      body: Container(
+        color: Colors.grey.shade50,       // backround color
+        child: _getClassList(context),    // lists of Classrooms
+      ),    
+      /*_______footer_______*/
+      bottomNavigationBar: Container(height: 80,
+        /*_______backround image_______*/
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background.jpg'),
+            fit: BoxFit.cover,
+          ),
         ),
-      ] : [ //not deleting (add/remove class buttons)
-        FloatingActionButton(
-          heroTag: "add_class", //idk what it is, but it throws exceptions without this tag thing
-          onPressed: _loading ? null : () => _promptAddClass(context),
-          tooltip: "Add a class",
-          child: const Icon(Icons.add),
+        /*_______Buttons for clases_______*/
+        child: _deleting ? 
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: _loading ? null : () => setState(() => _deleting = false),
+                child: const Icon(Icons.cancel),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(80, 50),
+                  primary: Colors.red, onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: BorderSide(color: Colors.black, width: 2) 
+                  )             
+                )
+              ),
+            ],
+          )
+          : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: _loading ? null : () => _promptAddClass(context),
+                child: const Icon(Icons.add),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(80, 50),
+                  primary: Colors.green, onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: BorderSide(color: Colors.black, width: 2) 
+                  )             
+                )
+              ),
+              SizedBox(width: 30),
+              ElevatedButton(
+                onPressed: _loading ? null : () => setState(() => _deleting = true),
+                child: const Icon(Icons.remove),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(80, 50),
+                  primary: Colors.red, onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: BorderSide(color: Colors.black, width: 2) 
+                  )             
+                )
+              ),
+            ],
         ),
-        FloatingActionButton(
-          heroTag: "remove_class",
-          onPressed: _loading ? null : () => setState(() => _deleting = true),
-          tooltip: "Remove a class",
-          child: const Icon(Icons.remove),
-        ),
-      ],
-      persistentFooterAlignment: AlignmentDirectional.center,
-      floatingActionButton: _loading ? const CircularProgressIndicator() : null,
+      ),
     );
   }
 }
