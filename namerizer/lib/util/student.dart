@@ -11,10 +11,10 @@ class Student {
   String? id;
 
   String get name {
-    if(preferredName != null) {
-      return preferredName!;
+    if(preferredName == null || preferredName == "") {
+      return fullName;
     }
-    return fullName;
+    return preferredName!;
   }
 
   String get fullName {
