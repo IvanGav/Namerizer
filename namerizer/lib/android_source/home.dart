@@ -260,9 +260,9 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        /*_______backround color_______*/ 
+        /*_______background color_______*/
         flexibleSpace: Container( 
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage('images/background.jpg'),
               fit: BoxFit.cover,
@@ -286,66 +286,70 @@ class _HomeState extends State<Home> {
       ),
       /*_______classrooms_______*/
       body: Container(
-        color: Colors.grey.shade50,       // backround color
+        color: Colors.grey.shade50,       // background color
         child: _getClassList(context),    // lists of Classrooms
       ),    
       /*_______footer_______*/
-      bottomNavigationBar: Container(height: 80,
-        /*_______backround image_______*/
-        decoration: BoxDecoration(
+      bottomNavigationBar: Container(
+        /*_______background image_______*/
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('images/background.jpg'),
             fit: BoxFit.cover,
           ),
         ),
-        /*_______Buttons for clases_______*/
-        child: _deleting ? 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: _loading ? null : () => setState(() => _deleting = false),
-                child: const Icon(Icons.cancel),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(80, 50),
-                  primary: Colors.red, onPrimary: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    side: BorderSide(color: Colors.black, width: 2) 
-                  )             
+        height: 80,
+        /*_______Buttons for classes_______*/
+        child: _deleting ?
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _loading ? null : () => setState(() => _deleting = false),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.red,
+                minimumSize: const Size(80, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  side: const BorderSide(color: Colors.black, width: 2)
                 )
               ),
-            ],
-          )
-          : Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: _loading ? null : () => _promptAddClass(context),
-                child: const Icon(Icons.add),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(80, 50),
-                  primary: Colors.green, onPrimary: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    side: BorderSide(color: Colors.black, width: 2) 
-                  )             
+              child: const Icon(Icons.cancel)
+            ),
+          ],
+        )
+        : Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _loading ? null : () => _promptAddClass(context),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.green,
+                minimumSize: const Size(80, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  side: const BorderSide(color: Colors.black, width: 2)
                 )
               ),
-              SizedBox(width: 30),
-              ElevatedButton(
-                onPressed: _loading ? null : () => setState(() => _deleting = true),
-                child: const Icon(Icons.remove),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(80, 50),
-                  primary: Colors.red, onPrimary: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    side: BorderSide(color: Colors.black, width: 2) 
-                  )             
+              child: const Icon(Icons.add)
+            ),
+            const SizedBox(width: 30),
+            ElevatedButton(
+              onPressed: _loading ? null : () => setState(() => _deleting = true),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.red,
+                minimumSize: const Size(80, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  side: const BorderSide(color: Colors.black, width: 2)
                 )
               ),
-            ],
+              child: const Icon(Icons.remove)
+            ),
+          ],
         ),
       ),
     );

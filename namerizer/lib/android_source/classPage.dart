@@ -162,9 +162,9 @@ class _ClassHomeState extends State<ClassHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        /*_______backround color_______*/ 
+        /*_______background color_______*/
         flexibleSpace: Container( 
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage('images/background.jpg'),
               fit: BoxFit.cover,
@@ -172,8 +172,8 @@ class _ClassHomeState extends State<ClassHome> {
           ),
         ),
         /*_______title & buttons_______*/
-        title: Text(_title, style: TextStyle(color: Colors.white)),
-        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(_title, style: const TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [ //tailing
           IconButton(
             onPressed: () => _openCodePage(context),
@@ -184,59 +184,62 @@ class _ClassHomeState extends State<ClassHome> {
       ),
       /*_______students_______*/
       body: Container(
-        color: Colors.grey.shade50,       // backround color
+        color: Colors.grey.shade50,       // background color
         child: _getStudentList(),         // lists of students
       ),  
       /*_______footer_______*/
       bottomNavigationBar: Container( height: 100,
-        /*_______backround image_______*/
-        decoration: BoxDecoration(
+        /*_______background image_______*/
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('images/background.jpg'),
             fit: BoxFit.cover,
           ),
         ),
-        /*_______Buttons for clases_______*/
+        /*_______Buttons for classes_______*/
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
               onPressed: _studentsInitialized ? () => _playFlash(context) : null,
-              child: const Text("Flash\nCards"),
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(100, 70),
-                primary: Colors.white, onPrimary: Colors.black,
+                foregroundColor: Colors.black,
+                backgroundColor: Colors.white,
+                minimumSize: const Size(100, 70),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                  side: BorderSide(color: Colors.black, width: 2) 
-                )             
-              )
+                  side: const BorderSide(color: Colors.black, width: 2)
+                )
+              ),
+              child: const Text("Flash\nCards")
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             ElevatedButton(
               onPressed: _studentsInitialized ? () => _playNameMatch(context) : null,
-              child: const Text("Match\nName"),
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(100, 70),
-                primary: Colors.white, onPrimary: Colors.black,
+                foregroundColor: Colors.black,
+                backgroundColor: Colors.white,
+                minimumSize: const Size(100, 70),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                  side: BorderSide(color: Colors.black, width: 2) 
+                  side: const BorderSide(color: Colors.black, width: 2)
                 )             
-              )
+              ),
+              child: const Text("Match\nName")
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             ElevatedButton(
               onPressed: _studentsInitialized ? () => _playPhotoMatch(context) : null,
-              child: const Text("Match\nPhoto"),
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(100, 70),
-                primary: Colors.white, onPrimary: Colors.black,
+                foregroundColor: Colors.black,
+                backgroundColor: Colors.white,
+                minimumSize: const Size(100, 70),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                  side: BorderSide(color: Colors.black, width: 2) 
-                )             
-              )
+                  side: const BorderSide(color: Colors.black, width: 2)
+                )
+              ),
+              child: const Text("Match\nPhoto")
             ),
           ],
         ),
