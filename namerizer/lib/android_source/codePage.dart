@@ -37,7 +37,7 @@ class _CodePageState extends State<CodePage> {
     return Center(child: Column(
       children: [
         const SizedBox(height: 50),
-        Text(header, style: TextStyle(color: Colors.white, fontSize: 22)),
+        Text(header, style: const TextStyle(color: Colors.white, fontSize: 22)),
         const SizedBox(height: 50),
         Container(
           height: 340, width: 365,
@@ -47,47 +47,46 @@ class _CodePageState extends State<CodePage> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15.0),
             child: Column(
               children: [
-                Text(text, style: TextStyle(fontSize: 16)),
-                SizedBox(height: 20),
-                Text(buttonText, style: TextStyle(fontSize: 16))
+                Text(text, style: const TextStyle(fontSize: 16)),
+                const SizedBox(height: 20),
+                Text(buttonText, style: const TextStyle(fontSize: 16))
               ]
           ))
         ),
-        SizedBox(height: 50),
+        const SizedBox(height: 50),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
               onPressed: () => _copyCode(context),
-              child: const Text("Code"),
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(90, 60),
+                minimumSize: const Size(90, 60),
                 primary: Colors.white, onPrimary: Colors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                  side: BorderSide(color: Colors.black, width: 2) 
+                  side: const BorderSide(color: Colors.black, width: 2)
                 )             
-              )
+              ),
+              child: const Text("Code")
             ),
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             ElevatedButton(
               onPressed: () => _copyAll(context),
-              child: const Text("All"),
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(90, 60),
+                minimumSize: const Size(90, 60),
                 primary: Colors.white, onPrimary: Colors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                  side: BorderSide(color: Colors.black, width: 2) 
+                  side: const BorderSide(color: Colors.black, width: 2)
                 )             
-              )
+              ),
+              child: const Text("All")
             ),
           ]
         )
-
       ]
     ));
   }
@@ -102,7 +101,7 @@ class _CodePageState extends State<CodePage> {
   }
 
   void _copyAll(BuildContext context) {
-    Clipboard.setData(ClipboardData(text: text)).whenComplete(() {
+    Clipboard.setData(ClipboardData(text: "$header\n\n$text")).whenComplete(() {
       var snackBar = const SnackBar(
         content: Text("Copied to Clipboard"),
       );
@@ -119,8 +118,8 @@ class _CodePageState extends State<CodePage> {
         backgroundColor: Colors.grey.shade50,
       ),
       body: Container(
-        /*_________backround image_________*/
-        decoration: BoxDecoration(
+        /*_________background image_________*/
+        decoration: const BoxDecoration(
             image: DecorationImage(
             image: AssetImage('images/background.jpg'),
             fit: BoxFit.cover,
