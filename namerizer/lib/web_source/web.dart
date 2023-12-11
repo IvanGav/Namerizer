@@ -81,57 +81,60 @@ class _WebHomeState extends State<WebHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Stack(
+      body: Container( 
+        height: double.infinity, width: double.infinity,
+        /*_______backround image_______*/
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        /*_______main structure_______*/
+        child: SingleChildScrollView(child: Column(
           children: [
-            /*_______Backround Image_______*/
-            Positioned(
-              top: 0, left: 0, right: 0, bottom: 0,
-              child: Image.asset('images/background.jpg', fit: BoxFit.cover)
+            /*_______(Logo, Name, Underline) displayed_______*/
+            SizedBox(height: 20),
+            Image.asset('images/logo.png'),
+            Text('Namerizer', style: TextStyle(fontSize: 30, color: Colors.white)),
+            Container(width: 300, height: 2, color: Colors.white),
+            /*_______Class Code Text Field_______*/
+            SizedBox(height: 180),
+            Container(
+              width: 300,
+              child: TextField(
+                controller: classCodeController,
+                cursorColor: Colors.black,
+                style: TextStyle(color: Colors.black, fontSize: 18),
+                decoration: InputDecoration(
+                  hintText: "Enter Class Code",
+                  errorText: error
+                )
+              )
             ),
-            Center(child: Column(
-              children: [
-                /*_______(Logo, Name, Underline) displayed_______*/
-                SizedBox(height: 20),
-                Image.asset('images/logo.png'),
-                Text('Namerizer', style: TextStyle(fontSize: 30, color: Colors.white)),
-                Container(width: 300, height: 2, color: Colors.white),
-                /*_______Class Code Text Field_______*/
-                SizedBox(height: 180),
-                Container(
-                  width: 300,
-                  child: TextField(
-                    controller: classCodeController,
-                    cursorColor: Colors.black,
-                    style: TextStyle(color: Colors.black, fontSize: 18),
-                    decoration: InputDecoration(
-                      hintText: "Enter Class Code",
-                      errorText: error
-                    )
-                  )
-                ),
-                /*_______Submit Button_______*/
-                SizedBox(height: 180),
-                ElevatedButton(
-                  onPressed: _loading ? null : _goToVerifyPage,
-                  child: _loading
-                    ? CircularProgressIndicator(color: Colors.white)
-                    : Text("Submit", style: TextStyle(fontSize: 22)),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(170, 60),
-                    primary: Colors.green,
-                    onPrimary: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: BorderSide(color: Colors.black, width: 2) 
-                    )             
-                  )
-                )  
-                
-              ]
-            ))
+            /*_______Submit Button_______*/
+            SizedBox(height: 180),
+            ElevatedButton(
+              onPressed: _loading ? null : _goToVerifyPage,
+              child: _loading
+                ? CircularProgressIndicator(color: Colors.white)
+                : Text("Submit", style: TextStyle(fontSize: 22)),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(170, 60),
+                primary: Colors.green,
+                onPrimary: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  side: BorderSide(color: Colors.black, width: 2) 
+                )             
+              )
+            ),
+            SizedBox(height: 50),  
+            
           ]
+      ))
       ),
+
     );
   }
 }
@@ -160,85 +163,85 @@ class VerifyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          /*_______Backround Image_______*/
-          Positioned(
-            top: 0, left: 0, right: 0, bottom: 0,
-            child: Image.asset('images/background.jpg', fit: BoxFit.cover),
+      body: Container(
+        height: double.infinity, width: double.infinity,
+        /*_______backround image_______*/
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background.jpg'),
+            fit: BoxFit.cover,
           ),
-      
-          Center(child: Column(
-            children: [
-              /*_______(Logo, Name, Underline) Dispayed_______*/
-              SizedBox(height: 20),
-              Image.asset('images/logo.png'),
-              Text('Namerizer', style: TextStyle(fontSize: 30, color: Colors.white,)),
-              Container(width: 300, height:2, color:Colors.white),
-              /*______Prints Class Name & Proff Name_______*/
-              SizedBox(height: 120),
-              Text("Is This Your Class?", style: TextStyle(fontSize: 20, color: Colors.white)),
-              SizedBox(height: 10),
-              Container(
-                height: 80, width: 300,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(width: 2, color: Colors.black),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    SizedBox(height: 4),
-                    Row(children: [
-                      Text("  Class: ", style: TextStyle(fontSize: 20)),
-                      Text("$className", style: TextStyle(fontSize: 20))
-                    ]),
-                    SizedBox(height: 8),
-                    Row(children: [
-                      Text("  Proff: ", style: TextStyle(fontSize: 20)),
-                      Text("$proffName", style: TextStyle(fontSize: 20))
-                    ]),
-                    SizedBox(height: 4),
-                  ],
-                ),
+        ),
+        child: SingleChildScrollView(child: Column(
+          children: [
+            /*_______(Logo, Name, Underline) Dispayed_______*/
+            SizedBox(height: 20),
+            Image.asset('images/logo.png'),
+            Text('Namerizer', style: TextStyle(fontSize: 30, color: Colors.white,)),
+            Container(width: 300, height:2, color:Colors.white),
+            /*______Prints Class Name & Proff Name_______*/
+            SizedBox(height: 120),
+            Text("Is This Your Class?", style: TextStyle(fontSize: 20, color: Colors.white)),
+            SizedBox(height: 10),
+            Container(
+              height: 80, width: 300,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 2, color: Colors.black),
+                borderRadius: BorderRadius.circular(10),
               ),
-              SizedBox(height: 130),
-              Center(child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Column(
                 children: [
-                  ElevatedButton(
-                    onPressed: () {Navigator.of(context).pop();},
-                    child: Text("No", style: TextStyle(fontSize: 20)),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size(150, 50),
-                      primary: Colors.red,
-                      onPrimary: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        side: BorderSide(color: Colors.black, width: 2) 
-                      )             
-                    )
-                  ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () {_goToSubmitInfoPage(context);},
-                    child: Text("Yes", style: TextStyle(fontSize: 20)),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size(150, 50),
-                      primary: Colors.green,
-                      onPrimary: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        side: BorderSide(color: Colors.black, width: 2) 
-                      )             
-                    )
-                  )                    
-                ]
-              ))
-            ],
-          ))
-
-        ],
+                  SizedBox(height: 4),
+                  Row(children: [
+                    Text("  Class: ", style: TextStyle(fontSize: 20)),
+                    Text("$className", style: TextStyle(fontSize: 20))
+                  ]),
+                  SizedBox(height: 8),
+                  Row(children: [
+                    Text("  Proff: ", style: TextStyle(fontSize: 20)),
+                    Text("$proffName", style: TextStyle(fontSize: 20))
+                  ]),
+                  SizedBox(height: 4),
+                ],
+              ),
+            ),
+            SizedBox(height: 130),
+            Center(child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {Navigator.of(context).pop();},
+                  child: Text("No", style: TextStyle(fontSize: 20)),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(150, 50),
+                    primary: Colors.red,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: BorderSide(color: Colors.black, width: 2) 
+                    )             
+                  )
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {_goToSubmitInfoPage(context);},
+                  child: Text("Yes", style: TextStyle(fontSize: 20)),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(150, 50),
+                    primary: Colors.green,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: BorderSide(color: Colors.black, width: 2) 
+                    )             
+                  )
+                )                   
+              ]
+            )),
+            SizedBox(height: 50), 
+          ],
+        ))
       ),
     );
   }
@@ -276,7 +279,8 @@ class _SubmitInfoPageState extends State<SubmitInfoPage> {
     final cameras = await availableCameras();
     _cameraController = CameraController(
       cameras[0], 
-      ResolutionPreset.high,
+      ResolutionPreset.low,
+      enableAudio: false
     );
     await _cameraController.initialize();
   }
@@ -359,15 +363,17 @@ class _SubmitInfoPageState extends State<SubmitInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          /*_______Background Image_______*/
-          Positioned(
-            top: 0, left: 0, right: 0, bottom: 0,
-            child: Image.asset('images/background.jpg', fit: BoxFit.cover,),
+      body: Container(
+        height: double.infinity, width: double.infinity,
+        /*_______backround image_______*/
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background.jpg'),
+            fit: BoxFit.cover,
           ),
-          
-          Center(child: Column(children: [
+        ),
+        child: SingleChildScrollView(child: Column(
+          children: [
             /*_______Class Name & Underline_______*/
             SizedBox(height: 20),
             Text('${widget.className}', style: TextStyle(fontSize: 25, color: Colors.white)),
@@ -491,11 +497,11 @@ class _SubmitInfoPageState extends State<SubmitInfoPage> {
                   side: BorderSide(color: Colors.black, width: 2) 
                 )             
               )
-            )  
-    
-          ]))
-          
-        ],
+            ),
+            SizedBox(height: 40)  
+            
+          ],
+        )),
       ),
     );
   }
@@ -544,7 +550,7 @@ class ExitPage extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
           ]))
         ]
       )
