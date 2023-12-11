@@ -5,6 +5,8 @@ import "package:flutter/material.dart";
 import "android_source/android.dart";
 import "web_source/web.dart";
 
+const String SITE = "namerizer.com";
+
 void main() {
   if(kIsWeb) {
     runApp(const WebApp());

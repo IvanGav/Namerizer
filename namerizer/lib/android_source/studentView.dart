@@ -5,9 +5,10 @@ import "../util/student.dart";
 //_____________________________Home____________________________________
 
 class StudentView extends StatefulWidget {
-  const StudentView({super.key, required this.student});
+  const StudentView({super.key, required this.student, required this.deleteFun});
 
   final Student student;
+  final Function(BuildContext,Student) deleteFun;
 
   @override
   State<StudentView> createState() => _StudentViewState();
@@ -19,11 +20,24 @@ class _StudentViewState extends State<StudentView> {
   //_____________fields_______________
   bool _expanded = false;
 
-  //_____________init_______________
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
+  //_____________methods_______________
+  void expand() {
+    setState(() {
+      _expanded = true;
+    });
+  }
+
+  void minimize() {
+    setState(() {
+      _expanded = false;
+    });
+  }
+
+  void toggle() {
+    setState(() {
+      _expanded = !_expanded;
+    });
+  }
 
   //_____________build_______________
   @override
@@ -34,7 +48,10 @@ class _StudentViewState extends State<StudentView> {
         backgroundImage: Image.network(widget.student.photo.path).image,
         radius: _expanded ? 30 : 20,
       ),
-      trailing: null, //here goes pronunciation when expanded, if we get to it
+      trailing: _expanded ? IconButton( //here would have gone pronunciation if I didn't put delete
+        icon: const Icon(Icons.delete_forever),
+        onPressed: () => widget.deleteFun(context,widget.student)
+      ) : null,
       title: Text(
         widget.student.name,
         maxLines: 1,
@@ -45,11 +62,7 @@ class _StudentViewState extends State<StudentView> {
       ) : null,
       dense: true,
       visualDensity: _expanded ? const VisualDensity(vertical: VisualDensity.maximumDensity) : const VisualDensity(vertical: 0),
-      onTap: () => {
-        setState(() {
-          _expanded = !_expanded;
-        })
-      }
+      onTap: toggle,
     );
   }
 }

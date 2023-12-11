@@ -3,6 +3,8 @@ import "package:flutter/services.dart";
 import "../util/cloudStorage.dart";
 import "home.dart";
 import "package:firebase_auth/firebase_auth.dart";
+import 'package:google_fonts/google_fonts.dart';
+
 
 import "../firebase_options.dart";
 import "package:firebase_core/firebase_core.dart";
@@ -97,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
       );
       print("--credentials passed");
     } on FirebaseAuthException catch (e) {
-      if (e.code == "INVALID_LOGIN_CREDENTIALS") {
+      if (e.code == "INVALID_LOGIN_CREDENTIALS" || e.code == "channel-error") {
         error = INVALID_CREDENTIALS;
       } else if (e.code == "user-not-found" || e.code == "invalid-email") {
         error = EMAIL_ERROR;
@@ -163,131 +165,186 @@ class _LoginPageState extends State<LoginPage> {
 
   //_____________body_______________
   Widget _getLoginPage(BuildContext context) {
-    final emailForm = TextFormField(
-      controller: _emailLoginControl,
-      validator: (_) {
-        if(_loginError == EMAIL_ERROR) {
-          return "Email doesn't exist.";
-        } else if(_loginError == INVALID_CREDENTIALS) {
-          return "Email or password is incorrect.";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: "Email",
-      ),
-    );
-    final passwordForm = TextFormField(
-      obscureText: true,
-      controller: _passwordLoginControl,
-      validator: (_) {
-        if(_loginError == PASSWORD_ERROR) {
-          return "Incorrect password.";
-        } else if(_loginError == INVALID_CREDENTIALS) {
-          return "Email or password is incorrect.";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: "Password",
-      ),
-    );
-    final loginButton = FloatingActionButton(
-      heroTag: "login",
-      onPressed: !_loading ? () => _submitLogin(context) : null,
-      tooltip: "Login",
-      child: const Text("Login"),
-    );
-    final toRegisterButton = FloatingActionButton(
-      heroTag: "to_register",
-      onPressed: !_loading ? () { setState(() { _login = false; }); } : null,
-      tooltip: "Sign up",
-      child: const Text("Sign up"),
-    );
-    const box = SizedBox(height: 20);
-    final img = Image.network("https://static-sl.files.edl.io/waes-lausd-ca.schoolloop.com/brtimiyx4g55xptb.png").image;
-    return Form(
-      key: _loginFormKey,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Text("Welcome to Namerizer!"),
-            box,
-            Image(image: img, height: 200),
-            box,
-            emailForm,
-            box,
-            passwordForm,
-            box,
-            loginButton,
-            box,
-            toRegisterButton,
-          ],
+    final emailForm = Container(width: 370,
+      child: TextFormField(
+        controller: _emailLoginControl,
+        validator: (_) {
+          if(_loginError == EMAIL_ERROR) {
+            return "Email doesn't exist.";
+          } else if(_loginError == INVALID_CREDENTIALS) {
+            return "Email or password is incorrect.";
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          hintText: "Email",
+          filled: true, fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0),),
         ),
       ),
+    );
+    final passwordForm = Container(width: 370,
+      child: TextFormField(
+        obscureText: true,
+        controller: _passwordLoginControl,
+        validator: (_) {
+          if(_loginError == PASSWORD_ERROR) {
+            return "Incorrect password.";
+          } else if(_loginError == INVALID_CREDENTIALS) {
+            return "Email or password is incorrect.";
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          hintText: "Password",
+          filled: true, fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+        ),
+      ),
+    );
+    final loginButton = ElevatedButton(
+      onPressed: !_loading ? () => _submitLogin(context) : null,
+      child: const Text("Login", style: TextStyle(fontSize: 22)),
+      style: ElevatedButton.styleFrom(
+        minimumSize: Size(160, 50),
+        primary: Colors.green, onPrimary: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          side: BorderSide(color: Colors.black, width: 2) 
+        )             
+      )
+    );
+    final toRegisterButton = ElevatedButton(
+      onPressed: !_loading ? () { setState(() { _login = false; }); } : null,
+      child: const Text("Sign up", style: TextStyle(fontSize: 18)),
+      style: ElevatedButton.styleFrom(
+        minimumSize: Size(120, 40),
+        primary: Colors.white, onPrimary: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          side: BorderSide(color: Colors.black, width: 2) 
+        )             
+      )
+    );
+    const box = SizedBox(height: 20);
+    const largeWidthBox = SizedBox(width: 500);
+    final img = AssetImage('images/logo.png');
+    final greeting = Text("Welcome To Namerizer !", 
+                     style: TextStyle(fontSize: 20, color: Colors.white,));
+   
+    return Form(
+      key: _loginFormKey,
+      child: Container( height: double.infinity,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              box,
+              Image(image: img),
+              box,
+              greeting,
+              SizedBox(height: 80),
+              emailForm,
+              box,
+              passwordForm,
+              SizedBox(height: 60), 
+              loginButton,
+              box,
+              toRegisterButton,
+              largeWidthBox, 
+            ],
+          ),
+      ),),
     );
   }
 
   Widget _getRegisterPage(BuildContext context) {
-    final emailForm = TextFormField(
-      controller: _emailRegisterControl,
-      validator: (_) => _registerError == EMAIL_EXISTS ? "Email is already in use." : null,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: "Email",
+    final emailForm = Container(width: 370,
+      child: TextFormField(
+        controller: _emailRegisterControl,
+        validator: (_) => _registerError == EMAIL_EXISTS ? "Email is already in use." : null,
+        decoration: InputDecoration(
+          hintText: "Email",
+          filled: true, fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+        ),
       ),
     );
-    final passwordForm = TextFormField(
-      obscureText: true,
-      controller: _passwordRegisterControl,
-      validator: (_) => _registerError == WEAK_PASSWORD ? "Weak password." : null,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: "Password",
+    final passwordForm = Container(width: 370,
+      child: TextFormField(
+        obscureText: true,
+        controller: _passwordRegisterControl,
+        validator: (_) => _registerError == WEAK_PASSWORD ? "Weak password." : null,
+        decoration: InputDecoration(
+          hintText: "Password",
+          filled: true, fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+        ),
       ),
     );
-    final password2Form = TextFormField(
-      obscureText: true,
-      controller: _password2RegisterControl,
-      validator: (_) => _registerError == PASSWORD_DIFFERENT ? "Password is different, please try again." : null,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: "Repeat Password",
+    final password2Form = Container(width: 370,
+      child: TextFormField(
+        obscureText: true,
+        controller: _password2RegisterControl,
+        validator: (_) => _registerError == PASSWORD_DIFFERENT ? "Password is different, please try again." : null,
+        decoration: InputDecoration(
+          hintText: "Repeat Password",
+          filled: true, fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+        ),
       ),
     );
-    final nameForm = TextFormField(
-      controller: _nameRegisterControl,
-      validator: (_) => null, //always accept
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: "Full Name",
+    final nameForm = Container(width: 370,
+      child: TextFormField(
+        controller: _nameRegisterControl,
+        validator: (_) => null, //always accept
+        decoration: InputDecoration(
+          hintText: "Full Name",
+          filled: true, fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+        ),
       ),
     );
-    final registerButton = FloatingActionButton(
-      heroTag: "register",
+    final registerButton = ElevatedButton(
       onPressed: !_loading ? () => _submitRegister(context) : null,
-      tooltip: "Sign Up",
-      child: const Text("Sign Up"),
+      child: const Text("Sign Up", style: TextStyle(fontSize: 20)),
+      style: ElevatedButton.styleFrom(
+        minimumSize: Size(150, 50),
+        primary: Colors.green, onPrimary: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          side: BorderSide(color: Colors.black, width: 2) 
+        )             
+      )
     );
-    final toLoginButton = FloatingActionButton(
-      heroTag: "to_login",
+    final toLoginButton = ElevatedButton(
       onPressed: !_loading ? () { setState(() { _login = true; }); } : null,
-      tooltip: "Cancel",
-      child: const Text("Cancel"),
+      child: const Text("Cancel", style: TextStyle(fontSize: 16)),
+      style: ElevatedButton.styleFrom(
+        minimumSize: Size(110, 35),
+        primary: Colors.white, onPrimary: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          side: BorderSide(color: Colors.black, width: 2) 
+        )             
+      )      
     );
     const box = SizedBox(height: 20);
-    final img = Image.network("https://static-sl.files.edl.io/waes-lausd-ca.schoolloop.com/brtimiyx4g55xptb.png").image;
+    const largeWidthBox = SizedBox(width: 500);
+    final img = AssetImage('images/logo.png');
+    final greeting = Text("Signing Up!", 
+                     style: TextStyle(fontSize: 18, color: Colors.white,));
+
     return Form(
       key: _registerFormKey,
+      child: Container(height: double.infinity,
       child: SingleChildScrollView(
         child: Column(
           children: [
-            const Text("Signing Up!"),
             box,
             Image(image: img, height: 100),
-            box,
+            SizedBox(height: 10),
+            greeting,
+            SizedBox(height: 10),
             nameForm,
             box,
             emailForm,
@@ -299,9 +356,10 @@ class _LoginPageState extends State<LoginPage> {
             registerButton,
             box,
             toLoginButton,
+            largeWidthBox
           ],
         ),
-      ),
+      ),),
     );
   }
 
@@ -310,17 +368,25 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Login or Register"),
+        backgroundColor: Colors.grey.shade50,
+        title: Text("Login or Register"),
         leading: IconButton(
           onPressed: () => SystemChannels.platform.invokeMethod("SystemNavigator.pop"),
           tooltip: "Quit to Home",
           icon: const Icon(Icons.home),
         ),
       ),
-      body: _login ? _getLoginPage(context) : _getRegisterPage(context),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: _login ? _getLoginPage(context) : _getRegisterPage(context),
+      ),
       persistentFooterAlignment: AlignmentDirectional.center,
-      floatingActionButton: _loading ? const CircularProgressIndicator() : null,
+      floatingActionButton: _loading ? const CircularProgressIndicator(color: Colors.white) : null,
     );
   }
 }

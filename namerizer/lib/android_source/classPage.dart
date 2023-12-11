@@ -1,5 +1,8 @@
 import "package:flutter/material.dart";
+import "package:namerizer/android_source/codePage.dart";
 import "package:namerizer/android_source/games/flashCardGame.dart";
+import "package:namerizer/android_source/games/matchPhotoGame.dart";
+import "package:namerizer/android_source/games/matchNameGame.dart";
 import "package:namerizer/android_source/studentView.dart";
 
 import "../util/student.dart";
@@ -38,7 +41,6 @@ class _ClassHomeState extends State<ClassHome> {
       _studentsInitialized = false;
     });
     _students = (await widget.cloud.getStudents(widget.code))!; //should be fine
-    print("--${_students.length}");
     setState(() {
       _studentsInitialized = true;
     });
@@ -57,10 +59,71 @@ class _ClassHomeState extends State<ClassHome> {
     return RefreshIndicator(
       onRefresh: _initStudents,
       child: ListView.builder(
-        itemBuilder: (context, index) => StudentView(student: _students[index]),
+        itemBuilder: (context, index) => StudentView(student: _students[index], deleteFun: _promptDeleteStudent),
         itemCount: _students.length,
       ),
     );
+  }
+
+  //_____________other functions______________
+  void _promptDeleteStudent(BuildContext context, Student student) {
+    if(student.id == null) {
+      _snack(context,"Student doesn't have an ID, try refreshing.");
+      return;
+    }
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Remove a student?"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text("A student with this name will be permanently deleted:", style: TextStyle(color: Colors.red)),
+              const SizedBox(height: 20),
+              Text(student.fullName),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+                onPressed: () {
+                  _deleteStudent(student.id!).then((success) {
+                    if(!success) {
+                      _snack(context,"Couldn't delete a student, try refreshing.");
+                    }
+                    return success;
+                  });
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Delete", style: TextStyle(color: Colors.red))
+            ),
+          ],
+        )
+    );
+  }
+
+  Future<bool> _deleteStudent(String studentID) async {
+    setState(() {
+      _studentsInitialized = false;
+    });
+    bool? success = await widget.cloud.deleteStudentById(widget.code, studentID);
+    setState(() {
+      if(success) {
+        _students.removeWhere((element) => element.id == studentID);
+      }
+      _studentsInitialized = true;
+    });
+    return success;
+  }
+
+  void _snack(BuildContext context, String message) {
+    var snackBar = SnackBar(
+      content: Text(message),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   //_____________play games_______________
@@ -71,43 +134,113 @@ class _ClassHomeState extends State<ClassHome> {
       ),
     );
   }
+  void _playPhotoMatch(BuildContext context){
+      Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MatchPhotoGame(title: _title, students: _students),
+      ),
+    );
+  }
+    void _playNameMatch(BuildContext context){
+      Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MatchNameGame(title: _title, students: _students),
+      ),
+    );
+  }
+
+  void _openCodePage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => CodePage(code: widget.code, title: _title),
+      ),
+    );
+  }
 
   //_____________build_______________
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(_title),
-        // actions: [ //tailing
-        //   IconButton(
-        //     onPressed: ,
-        //     tooltip: "Set Up",
-        //     icon: const Icon(Icons.settings),
-        //   ),
-        // ],
+        /*_______backround color_______*/ 
+        flexibleSpace: Container( 
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/background.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        /*_______title & buttons_______*/
+        title: Text(_title, style: TextStyle(color: Colors.white)),
+        iconTheme: IconThemeData(color: Colors.white),
+        actions: [ //tailing
+          IconButton(
+            onPressed: () => _openCodePage(context),
+            tooltip: "Go to Code Page",
+            icon: const Text("Code", style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
-      body: _getStudentList(),
-      persistentFooterButtons: [
-        FloatingActionButton(
-          heroTag: "flash_game",
-          onPressed: _studentsInitialized ? () => _playFlash(context) : null,
-          tooltip: "Flash Cards",
-          child: const Text("Flash"),
+      /*_______students_______*/
+      body: Container(
+        color: Colors.grey.shade50,       // backround color
+        child: _getStudentList(),         // lists of students
+      ),  
+      /*_______footer_______*/
+      bottomNavigationBar: Container( height: 100,
+        /*_______backround image_______*/
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background.jpg'),
+            fit: BoxFit.cover,
+          ),
         ),
-        FloatingActionButton(
-          heroTag: "match_name_game",
-          onPressed: () { print("The game is not yet implemented"); },
-          tooltip: "Match Name",
-          child: const Text("Match Name"),
+        /*_______Buttons for clases_______*/
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _studentsInitialized ? () => _playFlash(context) : null,
+              child: const Text("Flash\nCards"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(100, 70),
+                primary: Colors.white, onPrimary: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: BorderSide(color: Colors.black, width: 2) 
+                )             
+              )
+            ),
+            SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: _studentsInitialized ? () => _playNameMatch(context) : null,
+              child: const Text("Match\nName"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(100, 70),
+                primary: Colors.white, onPrimary: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: BorderSide(color: Colors.black, width: 2) 
+                )             
+              )
+            ),
+            SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: _studentsInitialized ? () => _playPhotoMatch(context) : null,
+              child: const Text("Match\nPhoto"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(100, 70),
+                primary: Colors.white, onPrimary: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: BorderSide(color: Colors.black, width: 2) 
+                )             
+              )
+            ),
+          ],
         ),
-        FloatingActionButton(
-          heroTag: "match_photo_game",
-          onPressed: () { print("The game is not yet implemented"); },
-          tooltip: "Match Photo",
-          child: const Text("Match Photo"),
-        ),
-      ],
+      ),
       persistentFooterAlignment: AlignmentDirectional.center,
     );
   }

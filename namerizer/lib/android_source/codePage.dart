@@ -1,0 +1,133 @@
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "../main.dart";
+
+//________________________ClassHome________________________
+
+class CodePage extends StatefulWidget {
+  const CodePage({super.key, required this.code, required this.title});
+
+  final String code; //class code
+  final String title;
+
+  @override
+  State<CodePage> createState() => _CodePageState();
+}
+
+//___________________ClassHomeState____________________
+
+class _CodePageState extends State<CodePage> {
+  //_____________fields_______________
+  late final String header;
+  late final String text;
+  late final String buttonText;
+
+  //_____________init_______________
+  @override
+  void initState() {
+    super.initState();
+    //SITE global variable is defined in main.dart
+    header = "Class name: ${widget.title}\nClass code:   ${widget.code}";
+    text = "To enroll in the class, go to $SITE and enter the class code, or go directly to\n$SITE/${widget.code}\n\nEnter your information and wait for confirmation. For questions, email <ivan.gavby@gmail.com>.";
+    buttonText = "Press buttons below to copy the whole instructions or just the class code to clipboard.";
+  }
+
+  //_____________methods_______________
+  Widget _getBody() {
+    return Center(child: Column(
+      children: [
+        const SizedBox(height: 50),
+        Text(header, style: TextStyle(color: Colors.white, fontSize: 22)),
+        const SizedBox(height: 50),
+        Container(
+          height: 340, width: 365,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(width: 2, color: Colors.black),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(15.0),
+            child: Column(
+              children: [
+                Text(text, style: TextStyle(fontSize: 16)),
+                SizedBox(height: 20),
+                Text(buttonText, style: TextStyle(fontSize: 16))
+              ]
+          ))
+        ),
+        SizedBox(height: 50),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () => _copyCode(context),
+              child: const Text("Code"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(90, 60),
+                primary: Colors.white, onPrimary: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: BorderSide(color: Colors.black, width: 2) 
+                )             
+              )
+            ),
+            SizedBox(width: 20),
+            ElevatedButton(
+              onPressed: () => _copyAll(context),
+              child: const Text("All"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(90, 60),
+                primary: Colors.white, onPrimary: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: BorderSide(color: Colors.black, width: 2) 
+                )             
+              )
+            ),
+          ]
+        )
+
+      ]
+    ));
+  }
+
+  void _copyCode(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: widget.code)).whenComplete(() {
+      var snackBar = const SnackBar(
+        content: Text("Copied to Clipboard"),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
+  }
+
+  void _copyAll(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: text)).whenComplete(() {
+      var snackBar = const SnackBar(
+        content: Text("Copied to Clipboard"),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
+  }
+
+  //_____________build_______________
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Class Code"),
+        backgroundColor: Colors.grey.shade50,
+      ),
+      body: Container(
+        /*_________backround image_________*/
+        decoration: BoxDecoration(
+            image: DecorationImage(
+            image: AssetImage('images/background.jpg'),
+            fit: BoxFit.cover,
+            ),
+        ),
+        child: _getBody(),
+      ),
+    );
+  }
+}
